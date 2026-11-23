@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Matchday — Football Tournament Manager</title>
+<style>
+:root{
+  --bg:#0a110e;--bg2:#0f1a15;--surface:#131f19;--surface2:#1a2a22;--line:#27392f;--text:#e9f2ed;--muted:#8da699;
+  --accent:#3ddc84;--accent-ink:#04210f;--gold:#f2c14e;--danger:#ef5b5b;--warn:#f0a63a;--info:#5aa9ff;
+  --shadow:0 8px 30px rgba(0,0,0,.35);--stripe:rgba(255,255,255,.025);
+}
+[data-theme=light]{
+  --bg:#eef3f0;--bg2:#e4ece7;--surface:#ffffff;--surface2:#f3f7f4;--line:#d5dfd9;--text:#13231b;--muted:#5b7165;
+  --accent:#12a150;--accent-ink:#fff;--gold:#b7860b;--danger:#d63c3c;--warn:#c47a0a;--info:#2a6fd1;
+  --shadow:0 8px 24px rgba(20,50,35,.12);--stripe:rgba(0,60,30,.035);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;line-height:1.2}
+h2{font-size:18px;letter-spacing:.2px}
+h3{font-size:15px}
+.num,td.n,.tabnum{font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px 20px;background:
+  repeating-linear-gradient(90deg,var(--stripe) 0 48px,transparent 48px 96px),var(--bg2);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:800;font-size:17px;letter-spacing:.3px;white-space:nowrap}
+.brand small{font-weight:500;color:var(--muted);font-size:12px}
+.brand .ball{font-size:20px}
+.spacer{flex:1}
+.top select{max-width:240px}
+.tabs{display:flex;gap:2px;padding:0 20px;background:var(--bg2);border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:53px;z-index:19}
+.tab{background:none;border:0;padding:11px 14px;color:var(--muted);cursor:pointer;font-weight:600;border-bottom:3px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--text);border-bottom-color:var(--accent)}
+.tab .badge{margin-left:6px}
+main{max-width:1240px;margin:0 auto;padding:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.card>h2,.card>h3{margin-bottom:12px}
+.card.flat{padding:0;overflow:hidden}
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.card-h h2,.card-h h3{flex:1}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row.end{justify-content:flex-end}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.tiny{font-size:11px}
+.bold{font-weight:700}
+.right{text-align:right}
+.center{text-align:center}
+.mt{margin-top:12px}.mb{margin-bottom:12px}
+.btn{background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:7px 12px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed;border-color:var(--line)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--danger)}
+.btn.danger:hover{border-color:var(--danger)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:3px 8px;font-size:12px;border-radius:7px}
+.btn.icon{padding:3px 7px}
+input[type=text],input[type=number],input[type=date],input[type=time],select,textarea,input:not([type]){background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px;width:100%;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+input[type=color]{width:38px;height:30px;padding:2px;border:1px solid var(--line);border-radius:7px;background:var(--bg);cursor:pointer}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+textarea{resize:vertical;min-height:90px}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld>span{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600}
+.fld.chk{flex-direction:row;align-items:center;gap:8px;padding-top:18px}
+.fld.chk>span{text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);font-weight:500}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.fields.w2{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.hint{color:var(--muted);font-size:12px;margin-top:4px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;background:var(--surface2);border:1px solid var(--line);color:var(--muted)}
+.chip.ok{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,var(--line))}
+.chip.err{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,var(--line))}
+.chip.info{color:var(--info)}
+.badge{display:inline-block;min-width:18px;padding:0 6px;border-radius:9px;background:var(--danger);color:#fff;font-size:11px;font-weight:700;text-align:center}
+.progress{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;border:1px solid var(--line)}
+.progress>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 60%,var(--gold)))}
+.crest{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;color:#fff;font-size:9px;font-weight:800;letter-spacing:.2px;flex:none;border:2px solid rgba(255,255,255,.25);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.crest.lg{width:44px;height:44px;font-size:13px}
+.crest.sm{width:20px;height:20px;font-size:7px;border-width:1px}
+.tm{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.tm span.nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tm.tbd .nm{color:var(--muted);font-style:italic}
+/* tables */
+.tw{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:center;padding:8px 6px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface)}
+.tbl td{padding:7px 6px;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);text-align:center;font-variant-numeric:tabular-nums}
+.tbl th.l,.tbl td.l{text-align:left}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover td{background:var(--surface2)}
+.tbl td.pts{font-weight:800}
+.tbl td.pos{width:34px;color:var(--muted);border-left:4px solid transparent}
+.tbl input{padding:4px 6px}
+.form{display:inline-flex;gap:3px}
+.form i{width:16px;height:16px;border-radius:4px;font-style:normal;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;color:#fff}
+.form .W{background:#1ea35a}.form .D{background:#7b8b83}.form .L{background:#d24a4a}
+.zones{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+.zones i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* matches */
+.rnd{padding:9px 14px;background:var(--surface2);font-weight:700;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.rnd:first-child{border-top:0}
+.match{display:grid;grid-template-columns:96px 1fr 128px 1fr 74px;gap:8px;align-items:center;padding:8px 14px;border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+.match:hover{background:color-mix(in srgb,var(--surface2) 55%,transparent)}
+.match .dt{font-size:12px;color:var(--muted);line-height:1.25}
+.match .h{justify-content:flex-end;text-align:right}
+.match .sc{width:46px;text-align:center;padding:6px 2px;font-weight:800;font-size:16px;font-variant-numeric:tabular-nums}
+.match .mid{display:flex;gap:6px;align-items:center;justify-content:center}
+.match .mid .dash{color:var(--muted)}
+.match .acts{display:flex;gap:4px;justify-content:flex-end}
+.match.played .sc{border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.mtags{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--muted);grid-column:2/5;justify-content:center;margin-top:-4px}
+.tag{padding:0 7px;border-radius:5px;background:var(--surface2);border:1px solid var(--line);font-size:11px;color:var(--muted)}
+.tag.gold{color:var(--gold);border-color:color-mix(in srgb,var(--gold) 40%,var(--line))}
+.tag.warn{color:var(--warn)}
+/* bracket */
+.bwrap{overflow:auto;padding:10px 4px 20px}
+.bracket{display:flex;min-width:max-content;align-items:stretch}
+.bcol{display:flex;flex-direction:column;width:250px;flex:none}
+.bcol h4{text-align:center;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);padding:0 0 10px;height:24px}
+.bslots{display:flex;flex-direction:column;flex:1}
+.slot{flex:1;position:relative;display:flex;align-items:center;padding:6px 22px 6px 22px;min-height:84px}
+.bcol.first .slot{padding-left:0}
+.bcol.last .slot{padding-right:0}
+.slot.nx::after{content:"";position:absolute;right:0;top:50%;width:22px;border-top:2px solid var(--line)}
+.slot.nx.up::before{content:"";position:absolute;right:0;top:50%;height:50%;border-right:2px solid var(--line)}
+.slot.nx.dn::before{content:"";position:absolute;right:0;bottom:50%;height:50%;border-right:2px solid var(--line)}
+.slot.pv .tie::before{content:"";position:absolute;left:-22px;top:50%;width:22px;border-top:2px solid var(--line)}
+.tie{position:relative;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:10px;cursor:pointer;overflow:visible;box-shadow:var(--shadow)}
+.tie:hover{border-color:var(--accent)}
+.tie .side{display:flex;align-items:center;gap:8px;padding:6px 9px;min-height:32px}
+.tie .side+.side{border-top:1px solid var(--line)}
+.tie .side .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.tie .side.w .nm{font-weight:800}
+.tie .side.w{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.tie .side.l .nm{color:var(--muted)}
+.tie .side .lg{font-size:11px;color:var(--muted);display:flex;gap:6px}
+.tie .side .tot{min-width:20px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.tie .foot{font-size:10.5px;color:var(--muted);text-align:center;padding:2px 6px;border-top:1px dashed var(--line);background:var(--surface2);border-radius:0 0 9px 9px}
+.tie.tbd{opacity:.8}
+.champ{display:flex;align-items:center;gap:16px;background:linear-gradient(120deg,color-mix(in srgb,var(--gold) 22%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,var(--gold) 50%,var(--line));border-radius:14px;padding:18px 22px;margin-bottom:16px}
+.champ .trophy{font-size:44px}
+.champ h2{font-size:22px}
+/* misc */
+.empty{padding:34px 16px;text-align:center;color:var(--muted)}
+.empty .big{font-size:38px;margin-bottom:6px}
+.callout{padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.callout.error{border-color:color-mix(in srgb,var(--danger) 55%,var(--line));color:var(--danger)}
+.callout.warn{border-color:color-mix(in srgb,var(--warn) 55%,var(--line));color:var(--warn)}
+.callout.info{color:var(--muted)}
+.callout.ok{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));color:var(--accent)}
+.callout b{color:var(--text)}
+.stage{border:1px solid var(--line);border-radius:14px;margin-bottom:14px;background:var(--surface)}
+.stage>.sh{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface2);border-radius:13px 13px 0 0;flex-wrap:wrap}
+.stage>.sh .idx{width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.stage>.sh input.name{font-weight:700;max-width:260px}
+.stage>.sb{padding:14px;display:grid;gap:14px}
+.sec{border-top:1px dashed var(--line);padding-top:12px}
+.sec>h4{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px}
+.srcrow,.zrow,.tbrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.srcrow>*{width:auto}
+.srcrow select,.srcrow input{width:auto;min-width:80px}
+.srcrow input[type=number]{width:70px}
+.zrow input[type=number]{width:64px}
+.zrow input[type=text]{width:190px}
+.tbrow{padding:4px 8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;width:max-content;max-width:100%}
+.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.pcard{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--surface2);display:flex;flex-direction:column;gap:4px}
+.pcard:hover{border-color:var(--accent)}
+.pcard.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
+.pcard .ic{font-size:22px}
+.pcard b{font-size:13.5px}
+.pcard small{color:var(--muted);line-height:1.35}
+.cat{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:14px 0 6px;font-weight:700}
+.tcard{display:flex;flex-direction:column;gap:8px}
+.tcard h3{font-size:16px}
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:4vh 12px;overflow:auto;backdrop-filter:blur(2px)}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:16px;width:100%;max-width:820px;box-shadow:var(--shadow)}
+.modal.sm{max-width:480px}
+.modal.lg{max-width:1000px}
+.modal>.mh{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.modal>.mh h3{flex:1;font-size:16px}
+.modal>.mb2{padding:16px 18px}
+.modal>.mf{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--line);flex-wrap:wrap}
+.mm-sec{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;background:var(--bg)}
+.mm-score{display:flex;align-items:center;gap:12px;justify-content:center;margin:6px 0 12px;flex-wrap:wrap}
+.mm-score input{width:64px;text-align:center;font-size:22px;font-weight:800;padding:8px 4px}
+.mm-score .tm{font-weight:700;font-size:15px}
+.evrow{display:grid;grid-template-columns:130px 1fr 1fr 1fr 70px 34px;gap:6px;margin-bottom:6px;align-items:center}
+.evrow input,.evrow select{padding:5px 7px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--accent);padding:10px 16px;border-radius:10px;z-index:80;box-shadow:var(--shadow);max-width:90vw}
+.toast.err{border-color:var(--danger)}
+.kpi{display:flex;flex-direction:column;gap:2px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi b{font-size:24px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px;color:var(--muted)}
+.mini{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+.mini:last-child{border-bottom:0}
+.mini .sc{font-weight:800;min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
+.mini .tm{flex:1}
+.mini .tm:first-child{justify-content:flex-end}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+kbd{background:var(--surface2);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:11px}
+.sticky-foot{position:sticky;bottom:0}
+@media (max-width:760px){
+  main{padding:12px}.top{padding:8px 12px}.tabs{padding:0 8px;top:49px}
+  .match{grid-template-columns:1fr 100px 1fr;grid-template-areas:"dt dt dt" "h mid a" "ac ac ac"}
+  .match>.dt{grid-area:dt}.match>.h{grid-area:h}.match>.mid{grid-area:mid}.match>.a{grid-area:a}.match>.acts{grid-area:ac;justify-content:center}
+  .mtags{grid-column:1/-1}
+  .evrow{grid-template-columns:1fr 1fr}
+  .brand small{display:none}
+}
+@media print{
+  .top,.tabs,.btn,.acts,.no-print,.toast{display:none!important}
+  body{background:#fff;color:#000}.card,.stage{border-color:#bbb;background:#fff;box-shadow:none}
+  :root{--text:#000;--muted:#444;--line:#ccc;--surface:#fff;--surface2:#f4f4f4;--bg:#fff}
+}
+.tm.rev{flex-direction:row-reverse}
+.tie .side .tm{flex:1;min-width:0}
+.match .h{display:flex;justify-content:flex-end;text-align:right;min-width:0}
+.match .a{display:flex;min-width:0}
+.match .tm{min-width:0}
+details.card summary{outline:none}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal"></div>
+<div id="confirm"></div>
+<input type="file" id="file" accept=".json,application/json" hidden>
+<script>
+'use strict';
+/* =====================================================================
+   ENGINE — pure logic, no DOM. Everything the UI shows is derived here.
+   ===================================================================== */
+const uid = (p = 'x') => p + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function shuffle(arr, rnd) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function sameSet(a, b) { if (a.length !== b.length) return false; const s = new Set(a); return b.every(x => s.has(x)); }
+function addDays(d, n) {
+  if (!d) return '';
+  const x = new Date(d + 'T00:00:00Z'); if (isNaN(x)) return '';
+  x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10);
+}
+function seedOrder(size) {
+  let o = [1, 2];
+  while (o.length < size) { const n = o.length * 2; const nx = []; for (const s of o) nx.push(s, n + 1 - s); o = nx; }
+  return o;
+}
+function groupName(i) { return 'Group ' + (i < 26 ? String.fromCharCode(65 + i) : String.fromCharCode(64 + Math.floor(i / 26)) + String.fromCharCode(65 + i % 26)); }
+function shortOf(name) {
+  const w = String(name).trim().split(/\s+/).filter(Boolean);
+  if (!w.length) return '???';
+  if (w.length === 1) return w[0].slice(0, 3).toUpperCase();
+  if (w.length >= 3) return w.slice(0, 3).map(x => x[0]).join('').toUpperCase();
+  return (w[0][0] + w[1].slice(0, 2)).toUpperCase();
+}
+function hslToHex(h, s, l) {
+  s /= 100; l /= 100;
+  const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  const x = v => Math.round(v * 255).toString(16).padStart(2, '0');
+  return '#' + x(f(0)) + x(f(8)) + x(f(4));
+}
+function colorFromName(name) {
+  let h = 0; for (const c of String(name)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return hslToHex(h % 360, 55, 42);
+}
+const nextPow2 = n => { let p = 1; while (p < n) p *= 2; return p; };
+
+/* ---------- constructors ---------- */
+function newTeam(name, o = {}) {
+  name = String(name || '').trim() || 'Team';
+  return { id: uid('tm'), name, short: (o.short || shortOf(name)).slice(0, 4).toUpperCase(), color: o.color || colorFromName(name), pot: o.pot || 0, players: o.players || [] };
+}
+function newTournament(o = {}) {
+  return { id: uid('tn'), name: o.name || 'New Tournament', season: o.season || '', organizer: '', preset: o.preset || 'custom', createdAt: Date.now(), updatedAt: Date.now(), targetTeams: o.targetTeams || null, teams: [], stages: [], matches: [], notes: '' };
+}
+const STAGE_TYPES = { league: 'League (round robin)', groups: 'Groups (several mini-leagues)', swiss: 'League phase (single table, N opponents)', knockout: 'Knockout (bracket)' };
+function newStage(type, o = {}) {
+  const s = {
+    id: uid('st'), name: '', type, sources: [],
+    startDate: '', intervalDays: 7, kickoff: '20:00',
+    points: { win: 3, draw: 1, loss: 0 }, drawPens: false, penPoints: { win: 2, loss: 1 },
+    tiebreakers: ['gd', 'gf', 'h2hPts', 'h2hGd', 'h2hGf', 'fairPlay', 'lots'], zones: [],
+    legs: 1, shuffle: true, numGroups: 4, groupSeeding: 'pots', matchesPerTeam: 8, numPots: 4,
+    pairing: 'seeded', koLegs: 1, finalLegs: 1, rounds: 0, awayGoals: false, extraTime: true, penalties: true,
+    thirdPlace: false, higherSeedSecondLeg: true, neutral: false, roundNames: '', manualSlots: null,
+    auto: true, randSeed: Math.floor(Math.random() * 1e9), generated: false, entrantIds: [], groups: [], ties: [],
+    forceComplete: false, pointAdj: {}, genNote: ''
+  };
+  Object.assign(s, o);
+  if (!s.name) s.name = { league: 'League', groups: 'Group Stage', swiss: 'League Phase', knockout: 'Knockout Stage' }[type];
+  return s;
+}
+
+/* ---------- indexes ---------- */
+const IDXMAP = new WeakMap();
+function IDX(t) { let x = IDXMAP.get(t); if (!x) { recompute(t); x = IDXMAP.get(t); } return x; }
+const teamById = (t, id) => IDX(t).team.get(id);
+const teamName = (t, id) => { const x = id && IDX(t).team.get(id); return x ? x.name : 'TBD'; };
+const isPlayed = m => !!(m && m.home && m.away && m.hg != null && m.ag != null);
+const hasPen = m => !!(m && m.pen && m.pen.h != null && m.pen.a != null);
+const stageById = (t, id) => t.stages.find(s => s.id === id);
+
+/* ---------- tie-breakers ---------- */
+const TB = {
+  gd: 'Goal difference', gf: 'Goals scored', ga: 'Goals conceded (fewer is better)', wins: 'Number of wins', awayGf: 'Away goals scored',
+  h2hPts: 'Head-to-head points', h2hGd: 'Head-to-head goal difference', h2hGf: 'Head-to-head goals scored', h2hAwayGf: 'Head-to-head away goals',
+  fairPlay: 'Fair play (fewer card points)', lots: 'Drawing of lots (team list order)'
+};
+const CARD_PTS = { yc: 1, y2: 3, rc: 4 };
+function emptyRow(id) { return { teamId: id, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0, awayGf: 0, yc: 0, rc: 0, fp: 0, cs: 0, adj: 0, form: [] }; }
+function tableFor(stage, teamIds, matches) {
+  const rows = new Map(teamIds.map(id => [id, emptyRow(id)]));
+  const P = stage.points || { win: 3, draw: 1, loss: 0 };
+  const PP = stage.penPoints || { win: 2, loss: 1 };
+  const ordered = matches.slice().sort((a, b) => (a.round - b.round) || ((a.date || '') < (b.date || '') ? -1 : 1));
+  for (const m of ordered) {
+    if (!isPlayed(m)) continue;
+    const H = rows.get(m.home), A = rows.get(m.away); if (!H || !A) continue;
+    H.p++; A.p++; H.gf += m.hg; H.ga += m.ag; A.gf += m.ag; A.ga += m.hg; A.awayGf += m.ag;
+    if (m.ag === 0) H.cs++; if (m.hg === 0) A.cs++;
+    if (m.hg > m.ag) { H.w++; A.l++; H.pts += P.win; A.pts += P.loss; H.form.push('W'); A.form.push('L'); }
+    else if (m.hg < m.ag) { A.w++; H.l++; A.pts += P.win; H.pts += P.loss; H.form.push('L'); A.form.push('W'); }
+    else {
+      H.d++; A.d++; H.form.push('D'); A.form.push('D');
+      if (stage.drawPens && hasPen(m) && m.pen.h !== m.pen.a) {
+        const hw = m.pen.h > m.pen.a; H.pts += hw ? PP.win : PP.loss; A.pts += hw ? PP.loss : PP.win;
+      } else { H.pts += P.draw; A.pts += P.draw; }
+    }
+    for (const e of (m.events || [])) {
+      if (!CARD_PTS[e.type]) continue; const r = rows.get(e.team); if (!r) continue;
+      r.fp += CARD_PTS[e.type]; if (e.type === 'yc') r.yc++; else r.rc++;
+    }
+  }
+  for (const r of rows.values()) { r.gd = r.gf - r.ga; r.adj = (stage.pointAdj && stage.pointAdj[r.teamId]) || 0; r.pts += r.adj; }
+  return [...rows.values()];
+}
+function groupDesc(list, f) {
+  const s = list.slice().sort((a, b) => f(b) - f(a)); const out = [];
+  for (let i = 0; i < s.length;) { let j = i; while (j < s.length && f(s[j]) === f(s[i])) j++; out.push(s.slice(i, j)); i = j; }
+  return out;
+}
+function rankRows(rows, matches, stage, seedOf) {
+  const crit = stage.tiebreakers || [];
+  const baseVal = (c, r) => {
+    switch (c) {
+      case 'gd': return r.gd; case 'gf': return r.gf; case 'ga': return -r.ga; case 'wins': return r.w;
+      case 'awayGf': return r.awayGf; case 'fairPlay': return -r.fp; case 'lots': return -seedOf(r.teamId); default: return 0;
+    }
+  };
+  const rec = (list, ci) => {
+    if (list.length <= 1) return list;
+    if (ci >= crit.length) return list.slice().sort((a, b) => seedOf(a.teamId) - seedOf(b.teamId));
+    const c = crit[ci]; let val;
+    if (c.startsWith('h2h')) {
+      const ids = list.map(r => r.teamId), set = new Set(ids);
+      const sub = tableFor(Object.assign({}, stage, { pointAdj: {} }), ids, matches.filter(m => set.has(m.home) && set.has(m.away)));
+      const mini = new Map(sub.map(r => [r.teamId, r]));
+      val = r => { const x = mini.get(r.teamId); return c === 'h2hPts' ? x.pts : c === 'h2hGd' ? x.gd : c === 'h2hGf' ? x.gf : x.awayGf; };
+    } else val = r => baseVal(c, r);
+    const out = [];
+    for (const g of groupDesc(list, val)) out.push(...(g.length > 1 ? rec(g, ci + 1) : g));
+    return out;
+  };
+  const out = [];
+  for (const g of groupDesc(rows, r => r.pts)) out.push(...rec(g, 0));
+  return out;
+}
+const crossCmp = seedOf => (a, b) => (b.pts - a.pts) || (b.gd - a.gd) || (b.gf - a.gf) || (a.fp - b.fp) || (seedOf(a.teamId) - seedOf(b.teamId));
+
+/* ---------- fixtures: orientation / round robin / swiss ---------- */
+function eulerOrient(edges) {
+  const E = edges.map(e => e.slice());
+  const deg = new Map();
+  for (const [u, v] of E) { deg.set(u, (deg.get(u) || 0) + 1); deg.set(v, (deg.get(v) || 0) + 1); }
+  const DUM = '__dummy__'; const all = E.slice();
+  for (const [v, d] of deg) if (d % 2) all.push([v, DUM]);
+  const adj = new Map();
+  const add = (u, v, i) => { if (!adj.has(u)) adj.set(u, []); adj.get(u).push([v, i]); };
+  all.forEach((e, i) => { add(e[0], e[1], i); add(e[1], e[0], i); });
+  const used = new Array(all.length).fill(false), dir = new Array(all.length), ptr = new Map();
+  const nextEdge = v => { const l = adj.get(v); let p = ptr.get(v) || 0; while (p < l.length && used[l[p][1]]) p++; ptr.set(v, p); return p < l.length ? l[p] : null; };
+  for (const s of adj.keys()) {
+    while (nextEdge(s)) {
+      let cur = s, e;
+      while ((e = nextEdge(cur))) { used[e[1]] = true; dir[e[1]] = [cur, e[0]]; cur = e[0]; }
+    }
+  }
+  return E.map((e, i) => dir[i] || e);
+}
+function roundRobinRounds(ids) {
+  const t = ids.slice(); if (t.length % 2) t.push(null);
+  const n = t.length, rounds = [];
+  for (let r = 0; r < n - 1; r++) {
+    const rd = [];
+    for (let i = 0; i < n / 2; i++) { const a = t[i], b = t[n - 1 - i]; if (a != null && b != null) rd.push([a, b]); }
+    rounds.push(rd);
+    t.splice(1, 0, t.pop());
+  }
+  return rounds;
+}
+function dateFor(s, round) { return s.startDate ? addDays(s.startDate, round * (s.intervalDays | 0)) : ''; }
+function addMatch(t, s, o) {
+  const m = {
+    id: uid('m'), stageId: s.id, group: o.group || null, round: o.round, tieId: o.tieId || null, leg: o.leg || 1,
+    home: o.home || null, away: o.away || null, hg: null, ag: null, aet: false, pen: null,
+    date: o.date != null ? o.date : dateFor(s, o.round), time: s.kickoff || '', venue: '', notes: '', events: []
+  };
+  t.matches.push(m); return m;
+}
+function fixturesRR(t, s, ids, group, rnd) {
+  const order = s.shuffle ? shuffle(ids, rnd) : ids.slice();
+  const rounds = roundRobinRounds(order);
+  const flat = []; rounds.forEach((rd, ri) => rd.forEach(p => flat.push({ ri, p })));
+  const ori = eulerOrient(flat.map(x => x.p)); flat.forEach((x, k) => x.o = ori[k]);
+  const L = Math.max(1, s.legs | 0);
+  for (let leg = 0; leg < L; leg++) {
+    rounds.forEach((rd, ri) => {
+      flat.filter(x => x.ri === ri).forEach(x => {
+        const [h, a] = leg % 2 ? [x.o[1], x.o[0]] : x.o;
+        addMatch(t, s, { group, round: leg * rounds.length + ri, home: h, away: a, leg: leg + 1 });
+      });
+    });
+  }
+}
+function generateSwiss(t, s, ids, rnd) {
+  const n = ids.length; const N = Math.max(1, Math.min(s.matchesPerTeam | 0, n - 1));
+  if ((n * N) % 2) throw new Error('Teams × matches per team must be even (' + n + ' × ' + N + ').');
+  const byTeam = id => t.teams.find(x => x.id === id);
+  const sum = a => a.reduce((x, y) => x + y, 0);
+  let pots, note = '';
+  const P0 = Math.max(1, s.numPots | 0);
+  if (ids.every(id => byTeam(id).pot > 0)) {
+    const keys = [...new Set(ids.map(id => byTeam(id).pot))].sort((a, b) => a - b);
+    pots = keys.map(k => ids.filter(id => byTeam(id).pot === k));
+  } else { const sz = Math.ceil(n / P0); pots = []; for (let i = 0; i < n; i += sz) pots.push(ids.slice(i, i + sz)); }
+  let constrained = pots.length > 1 && pots.every(p => p.length === pots[0].length) && N % pots.length === 0;
+  if (pots.length > 1 && !constrained) note = 'Pot constraints skipped (pots must be equal in size and matches per team divisible by number of pots).';
+  const attempt = (usePots) => {
+    const PP = usePots ? pots : [ids]; const P = PP.length; const per = N / P;
+    const potOf = new Map(); PP.forEach((p, pi) => p.forEach(id => potOf.set(id, pi)));
+    const need = new Map(ids.map(id => [id, Array(P).fill(per)]));
+    const adj = new Map(ids.map(id => [id, new Set()])); const edges = [];
+    for (const a of shuffle(ids, rnd)) {
+      for (let p = 0; p < P; p++) {
+        while (need.get(a)[p] > 0) {
+          const c = PP[p].filter(b => b !== a && !adj.get(a).has(b) && need.get(b)[potOf.get(a)] > 0);
+          if (!c.length) return null;
+          let best = null, bs = -1;
+          for (const b of c) { const sc = sum(need.get(b)) + rnd() * 0.9; if (sc > bs) { bs = sc; best = b; } }
+          adj.get(a).add(best); adj.get(best).add(a);
+          need.get(a)[p]--; need.get(best)[potOf.get(a)]--; edges.push([a, best]);
+        }
+      }
+    }
+    return edges;
+  };
+  let edges = null;
+  if (constrained) for (let k = 0; k < 4000 && !edges; k++) edges = attempt(true);
+  if (!edges) { if (constrained) note = 'Pot constraints could not be satisfied — fixtures drawn without pots.'; for (let k = 0; k < 4000 && !edges; k++) edges = attempt(false); }
+  if (!edges) throw new Error('Could not build a valid league-phase draw. Try fewer matches per team.');
+  const ori = eulerOrient(edges);
+  let bestDay = null, bestCnt = 1e9;
+  for (let k = 0; k < 250 && bestCnt > N; k++) {
+    const ord = shuffle(ori.map((_, i) => i), rnd); const busy = []; const day = new Array(ori.length); let mx = 0;
+    for (const i of ord) {
+      const [h, a] = ori[i]; let d = 0;
+      while (busy[d] && (busy[d].has(h) || busy[d].has(a))) d++;
+      (busy[d] = busy[d] || new Set()).add(h); busy[d].add(a); day[i] = d; mx = Math.max(mx, d + 1);
+    }
+    if (mx < bestCnt) { bestCnt = mx; bestDay = day; }
+  }
+  const idxs = ori.map((_, i) => i).sort((x, y) => bestDay[x] - bestDay[y]);
+  for (const i of idxs) addMatch(t, s, { round: bestDay[i], home: ori[i][0], away: ori[i][1] });
+  s.genNote = note;
+}
+function drawGroups(t, s, entrants, rnd) {
+  const g = Math.max(1, s.numGroups | 0); const ordered = entrants.map(e => e.teamId);
+  const names = Array.from({ length: g }, (_, i) => groupName(i));
+  if (s.groupSeeding === 'manual' && s.groups && s.groups.length === g && sameSet(s.groups.flatMap(x => x.teamIds), ordered)) {
+    s.groups = s.groups.map((x, i) => ({ name: names[i], teamIds: x.teamIds.slice() })); return;
+  }
+  const groups = names.map(nm => ({ name: nm, teamIds: [] }));
+  const mode = s.groupSeeding === 'manual' ? 'pots' : s.groupSeeding;
+  if (mode === 'random') shuffle(ordered, rnd).forEach((id, i) => groups[i % g].teamIds.push(id));
+  else if (mode === 'sequential') {
+    const base = Math.floor(ordered.length / g), extra = ordered.length % g; let k = 0;
+    groups.forEach((gr, i) => { const sz = base + (i < extra ? 1 : 0); gr.teamIds = ordered.slice(k, k + sz); k += sz; });
+  } else {
+    const byTeam = id => t.teams.find(x => x.id === id);
+    let pots;
+    if (ordered.some(id => byTeam(id).pot > 0)) {
+      const keys = [...new Set(ordered.map(id => byTeam(id).pot || 999))].sort((a, b) => a - b);
+      pots = keys.map(k => ordered.filter(id => (byTeam(id).pot || 999) === k));
+    } else { pots = []; for (let i = 0; i < ordered.length; i += g) pots.push(ordered.slice(i, i + g)); }
+    for (const pot of pots) {
+      const order = shuffle(groups.map((_, i) => i), rnd).sort((a, b) => groups[a].teamIds.length - groups[b].teamIds.length);
+      shuffle(pot, rnd).forEach((id, k) => groups[order[k % g]].teamIds.push(id));
+    }
+  }
+  s.groups = groups;
+}
+
+/* ---------- knockout generation ---------- */
+function koDims(n, rounds) {
+  const Rfull = Math.max(1, Math.ceil(Math.log2(Math.max(2, n))));
+  const size = 1 << Rfull; const R = rounds > 0 ? Math.min(rounds, Rfull) : Rfull;
+  return { Rfull, size, R, byes: size - n, winners: size >> R };
+}
+function avoidSameGroup(lineup, grpOf) {
+  const conflict = k => { const a = lineup[2 * k], b = lineup[2 * k + 1]; return a && b && grpOf(a) && grpOf(a) === grpOf(b); };
+  const P = lineup.length / 2;
+  for (let k = 0; k < P; k++) {
+    if (!conflict(k)) continue;
+    const cand = []; for (let j = 0; j < P; j++) if (j !== k) cand.push(j);
+    cand.sort((x, y) => Math.abs(x - k) - Math.abs(y - k));
+    let done = false;
+    for (const j of cand) {
+      for (const pos of [2 * j, 2 * j + 1]) {
+        if (!lineup[pos]) continue;
+        [lineup[2 * k + 1], lineup[pos]] = [lineup[pos], lineup[2 * k + 1]];
+        if (!conflict(k) && !conflict(j)) { done = true; break; }
+        [lineup[2 * k + 1], lineup[pos]] = [lineup[pos], lineup[2 * k + 1]];
+      }
+      if (done) break;
+    }
+  }
+}
+function buildFirstRound(s, ent, size, rnd) {
+  const n = ent.length; let mode = s.pairing; let seeds = ent.slice();
+  const hasGroups = ent.every(e => e.group);
+  const grpOf = id => (ent.find(e => e.teamId === id) || {}).group;
+  const pairs = lineup => { const sl = []; for (let i = 0; i < lineup.length; i += 2) sl.push([lineup[i], lineup[i + 1]]); return sl; };
+  if (mode === 'manual' && Array.isArray(s.manualSlots) && s.manualSlots.length === size / 2) {
+    const used = s.manualSlots.flat().filter(Boolean);
+    if (sameSet(used, ent.map(e => e.teamId)) && used.length === n) return s.manualSlots.map(p => [p[0] || null, p[1] || null]);
+    mode = 'seeded';
+  }
+  if (mode === 'cross-group' && hasGroups && n === size) {
+    const gs = []; ent.forEach(e => { if (!gs.some(x => x.gi === e.gi)) gs.push({ gi: e.gi, name: e.group }); });
+    gs.sort((a, b) => a.gi - b.gi);
+    const G = gs.length; const get = (gi, pos) => (ent.find(e => e.gi === gi && e.pos === pos) || {}).teamId;
+    const ok = (G === 2 || (G >= 4 && (G & (G - 1)) === 0)) && n === G * 2 && gs.every(g => get(g.gi, 1) && get(g.gi, 2));
+    if (ok) {
+      const slots = [];
+      if (G === 2) { slots.push([get(gs[0].gi, 1), get(gs[1].gi, 2)], [get(gs[1].gi, 1), get(gs[0].gi, 2)]); }
+      else for (let b = 0; b < G; b += 4) {
+        const [A, B, C, D] = [gs[b].gi, gs[b + 1].gi, gs[b + 2].gi, gs[b + 3].gi];
+        slots.push([get(A, 1), get(B, 2)], [get(C, 1), get(D, 2)], [get(B, 1), get(A, 2)], [get(D, 1), get(C, 2)]);
+      }
+      return slots;
+    }
+    mode = 'seeded';
+  }
+  if (mode === 'random') { seeds = shuffle(seeds, rnd); mode = 'seeded'; }
+  if (mode === 'seededDraw' && n === size && n >= 4) {
+    const half = n / 2, top = seeds.slice(0, half), bot = shuffle(seeds.slice(half), rnd);
+    const order = seedOrder(half); const slots = [];
+    for (const sd of order) slots.push([top[sd - 1].teamId, bot[sd - 1].teamId]);
+    return slots;
+  }
+  if (mode === 'pairedDraw' && n === size && n >= 8) {
+    const q = n / 4; const order = seedOrder(q); const slots = [];
+    for (const sd of order) {
+      const top = shuffle([seeds[2 * (sd - 1)], seeds[2 * (sd - 1) + 1]], rnd);
+      const bi = n - 2 * sd; const bot = shuffle([seeds[bi], seeds[bi + 1]], rnd);
+      slots.push([top[0].teamId, bot[0].teamId], [top[1].teamId, bot[1].teamId]);
+    }
+    return slots;
+  }
+  const pos = seedOrder(size);
+  const lineup = pos.map(sd => sd <= n ? seeds[sd - 1].teamId : null);
+  if (hasGroups) avoidSameGroup(lineup, grpOf);
+  return pairs(lineup);
+}
+function legsForRound(s, r, Rfull) { return (r === Rfull - 1) ? Math.max(1, s.finalLegs | 0) : Math.max(1, s.koLegs | 0); }
+function generateKnockout(t, s, ent, rnd) {
+  const n = ent.length; const { Rfull, size, R } = koDims(n, s.rounds);
+  const slots = buildFirstRound(s, ent, size, rnd);
+  s.ties = []; const byRound = [];
+  let slotBase = 0; const baseOf = [];
+  for (let r = 0; r < R; r++) { baseOf[r] = slotBase; slotBase += legsForRound(s, r, Rfull); }
+  for (let r = 0; r < R; r++) {
+    const cnt = size >> (r + 1); const ties = [];
+    for (let k = 0; k < cnt; k++) {
+      const tie = { id: uid('t'), round: r, idx: k, a: null, b: null, srcA: null, srcB: null, bye: false, third: false, matchIds: [], override: null };
+      if (r === 0) { tie.a = slots[k][0]; tie.b = slots[k][1]; tie.bye = !tie.a || !tie.b; }
+      else { tie.srcA = { tie: byRound[r - 1][2 * k].id, as: 'w' }; tie.srcB = { tie: byRound[r - 1][2 * k + 1].id, as: 'w' }; }
+      ties.push(tie); s.ties.push(tie);
+    }
+    byRound.push(ties);
+  }
+  if (s.thirdPlace && R === Rfull && R >= 2) {
+    s.ties.push({ id: uid('t'), round: R - 1, idx: 0, a: null, b: null, srcA: { tie: byRound[R - 2][0].id, as: 'l' }, srcB: { tie: byRound[R - 2][1].id, as: 'l' }, bye: false, third: true, matchIds: [], override: null });
+  }
+  for (const tie of s.ties) {
+    if (tie.bye) continue;
+    const L = legsForRound(s, tie.round, Rfull);
+    for (let l = 1; l <= L; l++) {
+      const d = s.startDate ? addDays(s.startDate, (baseOf[tie.round] + l - 1) * (s.intervalDays | 0)) : '';
+      tie.matchIds.push(addMatch(t, s, { round: tie.round, tieId: tie.id, leg: l, date: d }).id);
+    }
+  }
+}
+function koRoundList(s) {
+  if (!s.ties || !s.ties.length) return [];
+  const R = Math.max(...s.ties.map(x => x.round)) + 1;
+  const custom = (s.roundNames || '').split(',').map(x => x.trim()).filter(Boolean);
+  const out = [];
+  for (let r = 0; r < R; r++) {
+    const ties = s.ties.filter(x => x.round === r && !x.third); const c = ties.length;
+    const name = custom[r] || (c === 1 ? 'Final' : c === 2 ? 'Semi-finals' : c === 4 ? 'Quarter-finals' : 'Round of ' + c * 2);
+    out.push({ r, name, ties });
+  }
+  const th = s.ties.find(x => x.third); if (th) out[R - 1].third = th;
+  return out;
+}
+function roundLabel(s, tie) { if (tie.third) return 'Third place play-off'; const rl = koRoundList(s)[tie.round]; return rl ? rl.name : 'Round ' + (tie.round + 1); }
+
+function clearResult(m) { m.hg = null; m.ag = null; m.aet = false; m.pen = null; m.events = []; }
+function resolveTie(s, tie, legs) {
+  if (tie.bye) return { done: true, winner: tie.a || tie.b, loser: null, bye: true, state: 'bye' };
+  const a = tie.a, b = tie.b;
+  if (!a || !b) return { done: false, state: 'tbd' };
+  const played = legs.filter(isPlayed);
+  let ga = 0, gb = 0, awA = 0, awB = 0;
+  for (const m of played) {
+    if (m.home === a) { ga += m.hg; gb += m.ag; awB += m.ag; } else { ga += m.ag; gb += m.hg; awA += m.ag; }
+  }
+  const res = { a, b, ga, gb, awA, awB, played: played.length, total: legs.length };
+  if (played.length < legs.length) return Object.assign(res, { done: false, state: played.length ? 'partial' : 'open' });
+  const fin = (w, how) => Object.assign(res, { done: true, winner: w, loser: w === a ? b : a, how, state: 'done' });
+  if (ga !== gb) return fin(ga > gb ? a : b, 'agg');
+  if (legs.length > 1 && s.awayGoals && awA !== awB) return fin(awA > awB ? a : b, 'away');
+  const last = legs[legs.length - 1];
+  if (hasPen(last) && last.pen.h !== last.pen.a) { const hw = last.pen.h > last.pen.a; return fin(hw ? last.home : last.away, 'pens'); }
+  if (tie.override && (tie.override === a || tie.override === b)) return fin(tie.override, 'override');
+  return Object.assign(res, { done: false, state: 'level' });
+}
+function updateKnockout(t, s, idx, info) {
+  const sideFrom = src => { if (!src) return null; const r = idx.tieRes.get(src.tie); if (!r || !r.done) return null; return src.as === 'w' ? r.winner : r.loser; };
+  for (const tie of s.ties) {
+    if (tie.srcA) tie.a = sideFrom(tie.srcA);
+    if (tie.srcB) tie.b = sideFrom(tie.srcB);
+    const legs = tie.matchIds.map(id => idx.m.get(id)).filter(Boolean);
+    const L = legs.length;
+    const f = (L > 1 && s.higherSeedSecondLeg !== false) ? 'b' : 'a', o = f === 'a' ? 'b' : 'a';
+    legs.forEach((m, i) => {
+      let h, a;
+      if (L === 1) { h = tie.a; a = tie.b; } else { h = i % 2 === 0 ? tie[f] : tie[o]; a = i % 2 === 0 ? tie[o] : tie[f]; }
+      if (m.home !== h || m.away !== a) {
+        if (m.hg != null || m.ag != null || (m.events && m.events.length)) { clearResult(m); idx.resets++; }
+        m.home = h; m.away = a;
+      }
+    });
+    idx.tieRes.set(tie.id, resolveTie(s, tie, legs));
+  }
+  const R = s.ties.length ? Math.max(...s.ties.map(x => x.round)) + 1 : 0;
+  const last = s.ties.filter(x => x.round === R - 1 && !x.third);
+  const third = s.ties.find(x => x.third);
+  const rs = x => idx.tieRes.get(x.id);
+  const complete = last.length > 0 && last.every(x => rs(x).done) && (!third || rs(third).done);
+  const dims = koDims(s.entrantIds.length, s.rounds);
+  const full = R === dims.Rfull;
+  info.result = {
+    complete, winners: complete ? last.map(x => rs(x).winner) : [], losers: complete ? last.map(x => rs(x).loser).filter(Boolean) : [],
+    champion: complete && full ? rs(last[0]).winner : null, runnerUp: complete && full ? rs(last[0]).loser : null, third: complete && third ? rs(third).winner : null
+  };
+}
+
+/* ---------- round-robin style stage results ---------- */
+function computeRR(t, s, idx, info) {
+  const ms = t.matches.filter(m => m.stageId === s.id);
+  const seedOf = id => { const v = idx.seed.get(id); return v == null ? 9999 : v; };
+  const rows = new Map(); const res = { rows, tables: {}, groupOrder: [] };
+  if (s.type === 'groups') {
+    s.groups.forEach((g, gi) => {
+      const gm = ms.filter(m => m.group === g.name);
+      const rk = rankRows(tableFor(s, g.teamIds, gm), gm, s, seedOf);
+      rk.forEach((r, i) => { r.pos = i + 1; r.group = g.name; r.gi = gi; rows.set(r.teamId, r); });
+      res.tables[g.name] = rk; res.groupOrder.push(g.name);
+    });
+    res.ranking = [...rows.values()].sort((a, b) => (a.pos - b.pos) || crossCmp(seedOf)(a, b)).map(r => r.teamId);
+    res.ranking.forEach((id, i) => rows.get(id).rank = i + 1);
+  } else {
+    const rk = rankRows(tableFor(s, s.entrantIds, ms), ms, s, seedOf);
+    rk.forEach((r, i) => { r.pos = i + 1; r.rank = i + 1; rows.set(r.teamId, r); });
+    res.table = rk; res.ranking = rk.map(r => r.teamId);
+  }
+  info.played = ms.filter(isPlayed).length; info.total = ms.length;
+  res.complete = !!s.forceComplete || (ms.length > 0 && ms.every(isPlayed));
+  info.result = res;
+}
+function takeFromSource(t, st, res, src) {
+  const rows = res.rows; const seedOf = id => IDX(t).seed.get(id) ?? 9999;
+  const mk = r => ({ teamId: r.teamId, group: r.group || null, pos: r.pos, gi: r.gi });
+  switch (src.kind) {
+    case 'rank': return (res.ranking || []).slice(Math.max(0, (src.from || 1) - 1), src.to || 9999).map(id => mk(rows.get(id)));
+    case 'groupPos': { const out = []; for (const g of res.groupOrder || []) res.tables[g].filter(r => r.pos <= (src.perGroup || 1)).forEach(r => out.push(mk(r))); return out; }
+    case 'bestOfPos': {
+      const c = []; for (const g of res.groupOrder || []) { const r = res.tables[g][(src.pos || 3) - 1]; if (r) c.push(r); }
+      c.sort(crossCmp(seedOf)); return c.slice(0, src.count || 0).map(mk);
+    }
+    case 'koWinners': return (res.winners || []).filter(Boolean).map(id => ({ teamId: id }));
+    case 'koLosers': return (res.losers || []).filter(Boolean).map(id => ({ teamId: id }));
+    case 'all': return st.entrantIds.map(id => ({ teamId: id }));
+  }
+  return [];
+}
+function resolveEntrants(t, s, i, idx) {
+  if (i === 0 || !s.sources || !s.sources.length) {
+    const list = t.teams.map((tm, k) => ({ teamId: tm.id, seed: k + 1 }));
+    return { ready: list.length >= 2, entrants: list, reason: list.length < 2 ? 'Add at least 2 teams' : '' };
+  }
+  let out = [];
+  for (const src of s.sources) {
+    const j = t.stages.findIndex(x => x.id === src.stage);
+    if (j < 0 || j >= i) return { ready: false, entrants: [], reason: 'Invalid qualification source' };
+    const info = idx.info[src.stage];
+    if (!info || !info.result || !info.result.complete) return { ready: false, entrants: [], reason: 'Waiting for “' + t.stages[j].name + '” to finish' };
+    out.push(...takeFromSource(t, t.stages[j], info.result, src));
+  }
+  const seen = new Set(); out = out.filter(e => !seen.has(e.teamId) && seen.add(e.teamId));
+  const rk = e => idx.lastRank[e.teamId] != null ? idx.lastRank[e.teamId] : 1000 + (idx.seed.get(e.teamId) || 0);
+  out.sort((x, y) => rk(x) - rk(y)); out.forEach((e, k) => e.seed = k + 1);
+  return { ready: out.length >= 2, entrants: out, reason: out.length < 2 ? 'Fewer than 2 qualifiers' : '' };
+}
+function resetStage(t, s) {
+  t.matches = t.matches.filter(m => m.stageId !== s.id);
+  s.generated = false; s.ties = []; s.entrantIds = []; s.genNote = '';
+  if (s.groupSeeding !== 'manual') s.groups = [];
+}
+function generateStage(t, s, entrants) {
+  const rnd = mulberry32(s.randSeed | 0); const ids = entrants.map(e => e.teamId);
+  t.matches = t.matches.filter(m => m.stageId !== s.id); s.ties = []; s.genNote = '';
+  s.entrantIds = ids.slice();
+  if (s.type === 'league') fixturesRR(t, s, ids, null, rnd);
+  else if (s.type === 'groups') { drawGroups(t, s, entrants, rnd); s.groups.forEach(g => fixturesRR(t, s, g.teamIds, g.name, rnd)); }
+  else if (s.type === 'swiss') generateSwiss(t, s, ids, rnd);
+  else generateKnockout(t, s, entrants, rnd);
+  s.generated = true;
+}
+function regenStage(t, s) {
+  resetStage(t, s); recompute(t);
+  const i = t.stages.indexOf(s); const ent = resolveEntrants(t, s, i, IDX(t));
+  if (!ent.ready) return false;
+  generateStage(t, s, ent.entrants); recompute(t); return true;
+}
+const stageHasResults = (t, s) => t.matches.some(m => m.stageId === s.id && (m.hg != null || m.ag != null)) || (s.ties || []).some(x => x.override);
+
+/* ---------- main recompute ---------- */
+function recompute(t) {
+  const idx = { m: new Map(t.matches.map(m => [m.id, m])), team: new Map(t.teams.map(x => [x.id, x])), seed: new Map(t.teams.map((x, i) => [x.id, i])), tieRes: new Map(), info: {}, lastRank: {}, resets: 0, errors: [] };
+  IDXMAP.set(t, idx);
+  t.stages.forEach((s, i) => {
+    const info = idx.info[s.id] = { stale: false, status: 'pending', reason: '', result: null, played: 0, total: 0 };
+    let ent = resolveEntrants(t, s, i, idx);
+    if (s.generated && (!ent.ready || !sameSet(ent.entrants.map(e => e.teamId), s.entrantIds))) {
+      if (!stageHasResults(t, s)) { resetStage(t, s); idx.m = new Map(t.matches.map(m => [m.id, m])); }
+      else info.stale = true;
+    }
+    if (!s.generated && ent.ready && i > 0 && s.auto !== false) {
+      try { generateStage(t, s, ent.entrants); idx.m = new Map(t.matches.map(m => [m.id, m])); } catch (e) { idx.errors.push(s.name + ': ' + e.message); info.reason = e.message; }
+    }
+    info.ent = ent;
+    if (s.generated) {
+      if (s.type === 'knockout') { updateKnockout(t, s, idx, info); const ms = t.matches.filter(m => m.stageId === s.id); info.played = ms.filter(isPlayed).length; info.total = ms.length; }
+      else computeRR(t, s, idx, info);
+      if (info.result.complete && info.result.ranking) info.result.ranking.forEach((id, k) => idx.lastRank[id] = k + 1);
+      info.status = info.result.complete ? 'complete' : (info.played > 0 ? 'active' : 'scheduled');
+    } else { info.status = ent.ready ? 'ready' : 'pending'; info.reason = info.reason || ent.reason; }
+  });
+  idx.summary = tournamentSummary(t, idx);
+  return idx;
+}
+function tournamentSummary(t, idx) {
+  const s = t.stages[t.stages.length - 1]; if (!s) return {};
+  const info = idx.info[s.id]; if (!info || !info.result || !info.result.complete) return {};
+  if (s.type === 'knockout') return info.result.champion ? { champion: info.result.champion, runnerUp: info.result.runnerUp, third: info.result.third } : {};
+  if (s.type === 'groups') return {};
+  const r = info.result.ranking; return { champion: r[0], runnerUp: r[1], third: r[2] };
+}
+
+/* ---------- plan counts + validation ---------- */
+function groupSizes(n, g) { const base = Math.floor(n / g), ex = n % g; return Array.from({ length: g }, (_, i) => base + (i < ex ? 1 : 0)); }
+function planCounts(t) {
+  const out = []; const T = t.teams.length;
+  t.stages.forEach((s, i) => {
+    let n;
+    if (i === 0 || !s.sources.length) n = T;
+    else {
+      n = 0;
+      for (const src of s.sources) {
+        const j = t.stages.findIndex(x => x.id === src.stage);
+        if (j < 0 || j >= i) { n = NaN; break; }
+        const sj = t.stages[j], nin = out[j];
+        if (sj.type === 'knockout') { n += (src.kind === 'koWinners' || src.kind === 'koLosers') ? koDims(nin, sj.rounds).winners : NaN; continue; }
+        if (sj.type === 'groups') {
+          const sizes = groupSizes(nin, Math.max(1, sj.numGroups | 0));
+          if (src.kind === 'groupPos') n += sizes.reduce((a, z) => a + Math.min(src.perGroup || 1, z), 0);
+          else if (src.kind === 'bestOfPos') n += Math.min(src.count || 0, sizes.filter(z => z >= (src.pos || 3)).length);
+          else if (src.kind === 'rank') n += Math.max(0, Math.min(src.to || 9999, nin) - (src.from || 1) + 1);
+          else n += nin;
+        } else {
+          if (src.kind === 'rank') n += Math.max(0, Math.min(src.to || 9999, nin) - (src.from || 1) + 1);
+          else if (src.kind === 'all') n += nin; else n = NaN;
+        }
+      }
+    }
+    out.push(n);
+  });
+  return out;
+}
+function validate(t) {
+  const L = []; const add = (lvl, msg, sid) => L.push({ lvl, msg, sid });
+  const T = t.teams.length; const counts = planCounts(t);
+  if (!t.stages.length) add('error', 'No stages defined — add at least one stage in the Format tab.');
+  if (t.targetTeams && T !== t.targetTeams) add('error', `This format needs ${t.targetTeams} teams but you have ${T}` + (T < t.targetTeams ? ` (add ${t.targetTeams - T}).` : ` (remove ${T - t.targetTeams}).`));
+  if (T < 2) add('error', 'Add at least 2 teams.');
+  const names = t.teams.map(x => x.name.trim().toLowerCase()); const dup = names.filter((x, i) => names.indexOf(x) !== i);
+  if (dup.length) add('error', 'Duplicate team names: ' + [...new Set(dup)].join(', '));
+  t.stages.forEach((s, i) => {
+    const n = counts[i]; const nm = '“' + s.name + '”';
+    if (i > 0 && s.sources.length) {
+      for (const src of s.sources) { const j = t.stages.findIndex(x => x.id === src.stage); if (j < 0 || j >= i) add('error', `${nm}: a qualification source points to a missing or later stage.`, s.id); }
+    }
+    if (i > 0 && !s.sources.length) add('warn', `${nm} has no qualification sources, so every team enters it.`, s.id);
+    if (!isFinite(n) || isNaN(n)) { add('error', `${nm}: cannot work out how many teams qualify — check its sources.`, s.id); return; }
+    add('info', `${nm} will have ${n} team${n === 1 ? '' : 's'}.`, s.id);
+    if (n < 2) { add('error', `${nm}: needs at least 2 teams (has ${n}).`, s.id); return; }
+    if (s.type === 'league') { if ((s.legs | 0) < 1) add('error', `${nm}: legs must be ≥ 1.`, s.id); }
+    if (s.type === 'groups') {
+      const g = Math.max(1, s.numGroups | 0); const sz = groupSizes(n, g);
+      if (Math.min(...sz) < 2) add('error', `${nm}: ${n} teams in ${g} groups leaves a group with fewer than 2 teams.`, s.id);
+      else if (n % g) add('warn', `${nm}: ${n} teams don't split evenly into ${g} groups — groups will have ${[...new Set(sz)].join(' or ')} teams.`, s.id);
+      else add('info', `${nm}: ${g} groups of ${n / g}.`, s.id);
+      t.stages.forEach((s2, i2) => s2.sources.forEach(src => {
+        if (src.stage !== s.id) return;
+        if (src.kind === 'groupPos' && (src.perGroup || 1) > Math.min(...sz)) add('error', `${s2.name}: takes ${src.perGroup} per group but the smallest group has ${Math.min(...sz)}.`, s2.id);
+        if (src.kind === 'bestOfPos' && (src.count || 0) > sizes_with(sz, src.pos || 3)) add('error', `${s2.name}: wants ${src.count} best ${ord(src.pos || 3)}-placed teams but only ${sizes_with(sz, src.pos || 3)} groups have one.`, s2.id);
+      }));
+    }
+    if (s.type === 'swiss') {
+      const N = s.matchesPerTeam | 0;
+      if (N >= n) add('error', `${nm}: ${N} matches per team is impossible with ${n} teams (max ${n - 1}).`, s.id);
+      else if ((n * N) % 2) add('error', `${nm}: ${n} teams × ${N} matches is odd — need an even product.`, s.id);
+      const P = Math.max(1, s.numPots | 0);
+      if (P > 1 && n % P) add('warn', `${nm}: ${n} teams can't be split into ${P} equal pots — pot rules will be skipped.`, s.id);
+      else if (P > 1 && N % P) add('warn', `${nm}: ${N} matches isn't divisible by ${P} pots — pot rules will be skipped.`, s.id);
+    }
+    if (s.type === 'knockout') {
+      const d = koDims(n, s.rounds);
+      if (d.byes) add('info', `${nm}: ${n} teams → ${d.byes} bye${d.byes > 1 ? 's' : ''} for the top seed${d.byes > 1 ? 's' : ''} in the first round.`, s.id);
+      if (s.pairing === 'cross-group') { const ok = i > 0 && s.sources.some(x => x.kind === 'groupPos' && x.perGroup === 2) && s.sources.length === 1 && d.byes === 0; if (!ok) add('warn', `${nm}: cross-group pairing needs exactly 2 qualifiers from each group (power-of-2 groups). It will fall back to seeded pairing.`, s.id); }
+      if ((s.pairing === 'seededDraw' || s.pairing === 'pairedDraw') && d.byes) add('warn', `${nm}: this draw style needs a full bracket (power of 2). It will fall back to seeded pairing.`, s.id);
+      if (s.thirdPlace && (d.R < 2 || d.R !== d.Rfull)) add('warn', `${nm}: third-place play-off is only created for a full bracket with 2+ rounds.`, s.id);
+    }
+  });
+  return L;
+}
+const sizes_with = (sz, pos) => sz.filter(z => z >= pos).length;
+const ord = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 > 10 && n % 100 < 14) ? 0 : (n % 10 < 4 ? n % 10 : 0)]);
+
+/* ---------- player statistics ---------- */
+function playerStats(t, pred) {
+  const map = new Map(); const get = (team, player) => {
+    const nm = String(player || '').trim() || 'Unknown'; const key = team + '|' + nm.toLowerCase();
+    if (!map.has(key)) map.set(key, { player: nm, team, goals: 0, pens: 0, assists: 0, og: 0, yc: 0, rc: 0, apps: new Set() });
+    return map.get(key);
+  };
+  for (const m of t.matches) {
+    if (!isPlayed(m) || (pred && !pred(m))) continue;
+    for (const e of (m.events || [])) {
+      if (!e.team) continue; const p = get(e.team, e.player); p.apps.add(m.id);
+      if (e.type === 'goal' || e.type === 'pen') { p.goals++; if (e.type === 'pen') p.pens++; if (e.assist && String(e.assist).trim()) get(e.team, e.assist).assists++; }
+      else if (e.type === 'og') p.og++; else if (e.type === 'yc') p.yc++; else if (e.type === 'y2' || e.type === 'rc') p.rc++;
+    }
+  }
+  return [...map.values()];
+}
+function eventGoals(m) {
+  let h = 0, a = 0;
+  for (const e of (m.events || [])) {
+    if (e.type === 'goal' || e.type === 'pen') { if (e.team === m.home) h++; else if (e.team === m.away) a++; }
+    else if (e.type === 'og') { if (e.team === m.home) a++; else if (e.team === m.away) h++; }
+  }
+  return { h, a };
+}
+
+
+/* =====================================================================
+   PRESETS + SAMPLE TEAMS
+   ===================================================================== */
+const TB_WC = ['gd', 'gf', 'h2hPts', 'h2hGd', 'h2hGf', 'fairPlay', 'lots'];
+const TB_EPL = ['gd', 'gf', 'h2hPts', 'h2hGd', 'h2hGf', 'fairPlay', 'lots'];
+const TB_H2H_FIRST = ['h2hPts', 'h2hGd', 'h2hGf', 'gd', 'gf', 'fairPlay', 'lots'];
+const TB_UEFA_LP = ['gd', 'gf', 'awayGf', 'wins', 'fairPlay', 'lots'];
+const ZC = { green: '#22c55e', blue: '#3b82f6', orange: '#f59e0b', teal: '#14b8a6', red: '#ef4444', purple: '#a855f7', gold: '#eab308' };
+
+function uefaLeaguePhase(name, N, pots) {
+  const lp = newStage('swiss', { name: 'League Phase', matchesPerTeam: N, numPots: pots, tiebreakers: TB_UEFA_LP, intervalDays: 14,
+    zones: [{ from: 1, to: 8, label: 'Round of 16', color: ZC.green }, { from: 9, to: 24, label: 'Knockout play-offs', color: ZC.blue }, { from: 25, to: 36, label: 'Eliminated', color: ZC.red }] });
+  const po = newStage('knockout', { name: 'Knockout Play-offs', sources: [{ stage: lp.id, kind: 'rank', from: 9, to: 24 }], pairing: 'pairedDraw', rounds: 1, koLegs: 2, finalLegs: 2, roundNames: 'Knockout play-offs', intervalDays: 7 });
+  const ko = newStage('knockout', { name: 'Knockout Phase', sources: [{ stage: lp.id, kind: 'rank', from: 1, to: 8 }, { stage: po.id, kind: 'koWinners' }], pairing: 'seeded', koLegs: 2, finalLegs: 1, neutral: false, intervalDays: 14 });
+  return [lp, po, ko];
+}
+function domesticLeague(zones, tb) {
+  return () => [newStage('league', { name: 'League', legs: 2, tiebreakers: tb || TB_EPL, zones, intervalDays: 7 })];
+}
+const PRESETS = [
+  { id: 'wc32', cat: 'International', icon: '🏆', name: 'World Cup — 32 teams', teams: 32, strict: true,
+    desc: '8 groups of 4. Top two advance to a Round of 16 with World Cup-style cross-group pairings, then QF, SF, third-place play-off and final.',
+    build: () => { const g = newStage('groups', { name: 'Group Stage', numGroups: 8, tiebreakers: TB_WC, zones: [{ from: 1, to: 2, label: 'Qualify for Round of 16', color: ZC.green }] });
+      const k = newStage('knockout', { name: 'Knockout Stage', sources: [{ stage: g.id, kind: 'groupPos', perGroup: 2 }], pairing: 'cross-group', thirdPlace: true, neutral: true }); return [g, k]; } },
+  { id: 'wc48', cat: 'International', icon: '🌍', name: 'World Cup — 48 teams', teams: 48, strict: true,
+    desc: '12 groups of 4. Top two plus the 8 best third-placed teams reach a Round of 32. Seeded bracket with same-group avoidance.',
+    build: () => { const g = newStage('groups', { name: 'Group Stage', numGroups: 12, tiebreakers: TB_WC, zones: [{ from: 1, to: 2, label: 'Qualify', color: ZC.green }, { from: 3, to: 3, label: 'Best third-placed may qualify', color: ZC.orange }] });
+      const k = newStage('knockout', { name: 'Knockout Stage', sources: [{ stage: g.id, kind: 'groupPos', perGroup: 2 }, { stage: g.id, kind: 'bestOfPos', pos: 3, count: 8 }], pairing: 'seeded', thirdPlace: true, neutral: true }); return [g, k]; } },
+  { id: 'euro24', cat: 'International', icon: '🇪🇺', name: 'Euros / AFCON — 24 teams', teams: 24, strict: true,
+    desc: '6 groups of 4. Top two plus the 4 best third-placed teams reach a Round of 16.',
+    build: () => { const g = newStage('groups', { name: 'Group Stage', numGroups: 6, tiebreakers: TB_WC, zones: [{ from: 1, to: 2, label: 'Qualify', color: ZC.green }, { from: 3, to: 3, label: 'Best third-placed may qualify', color: ZC.orange }] });
+      const k = newStage('knockout', { name: 'Knockout Stage', sources: [{ stage: g.id, kind: 'groupPos', perGroup: 2 }, { stage: g.id, kind: 'bestOfPos', pos: 3, count: 4 }], pairing: 'seeded', neutral: true }); return [g, k]; } },
+  { id: 'copa16', cat: 'International', icon: '🌎', name: 'Copa-style Cup — 16 teams', teams: 16, strict: true,
+    desc: '4 groups of 4, top two into quarter-finals (A1 v B2, etc.), semi-finals, third-place play-off and final.',
+    build: () => { const g = newStage('groups', { name: 'Group Stage', numGroups: 4, tiebreakers: TB_WC, zones: [{ from: 1, to: 2, label: 'Quarter-finals', color: ZC.green }] });
+      const k = newStage('knockout', { name: 'Knockout Stage', sources: [{ stage: g.id, kind: 'groupPos', perGroup: 2 }], pairing: 'cross-group', thirdPlace: true, neutral: true }); return [g, k]; } },
+  { id: 'smallcup', cat: 'International', icon: '🥅', name: 'Small Cup — 8 teams', teams: 8, strict: true,
+    desc: '2 groups of 4 → semi-finals (A1 v B2, B1 v A2) → final. Great for friendly or school tournaments.',
+    build: () => { const g = newStage('groups', { name: 'Group Stage', numGroups: 2, tiebreakers: TB_WC, zones: [{ from: 1, to: 2, label: 'Semi-finals', color: ZC.green }] });
+      const k = newStage('knockout', { name: 'Knockout Stage', sources: [{ stage: g.id, kind: 'groupPos', perGroup: 2 }], pairing: 'cross-group', thirdPlace: true, neutral: true }); return [g, k]; } },
+  { id: 'ucl36', cat: 'Club Europe', icon: '⭐', name: 'Champions League — 36 teams (new format)', teams: 36, strict: true,
+    desc: 'Single league phase table, 8 matches each from 4 pots. Top 8 skip ahead, 9–24 play two-legged play-offs, then two-legged R16/QF/SF and a one-off final.',
+    build: () => uefaLeaguePhase('UCL', 8, 4) },
+  { id: 'uel36', cat: 'Club Europe', icon: '🟠', name: 'Europa League — 36 teams', teams: 36, strict: true,
+    desc: 'Same structure as the Champions League new format (league phase of 8 games, play-offs, knockout phase).',
+    build: () => uefaLeaguePhase('UEL', 8, 4) },
+  { id: 'uecl36', cat: 'Club Europe', icon: '🟢', name: 'Conference League — 36 teams', teams: 36, strict: true,
+    desc: 'League phase of 6 matches per team (6 pots), then play-offs and knockouts.',
+    build: () => uefaLeaguePhase('UECL', 6, 6) },
+  { id: 'ucl32', cat: 'Club Europe', icon: '🏟️', name: 'Champions League — 32 teams (classic)', teams: 32, strict: true,
+    desc: '8 groups of 4 played home & away, top two into a two-legged Round of 16 (winners meet runners-up of other groups), final in one match.',
+    build: () => { const g = newStage('groups', { name: 'Group Stage', numGroups: 8, legs: 2, tiebreakers: TB_WC, intervalDays: 14, zones: [{ from: 1, to: 2, label: 'Round of 16', color: ZC.green }, { from: 3, to: 3, label: 'Europa League', color: ZC.orange }] });
+      const k = newStage('knockout', { name: 'Knockout Phase', sources: [{ stage: g.id, kind: 'groupPos', perGroup: 2 }], pairing: 'cross-group', koLegs: 2, finalLegs: 1, neutral: false, intervalDays: 14 }); return [g, k]; } },
+  { id: 'epl', cat: 'Domestic League', icon: '🦁', name: 'Premier League style — 20 teams', teams: 20, strict: false,
+    desc: 'Double round robin (38 matchdays). Goal difference then goals scored, then head-to-head. Zones for Europe and relegation.',
+    build: domesticLeague([{ from: 1, to: 4, label: 'Champions League', color: ZC.blue }, { from: 5, to: 5, label: 'Europa League', color: ZC.orange }, { from: 6, to: 6, label: 'Conference League', color: ZC.teal }, { from: 18, to: 20, label: 'Relegation', color: ZC.red }]) },
+  { id: 'laliga', cat: 'Domestic League', icon: '🇪🇸', name: 'La Liga style — 20 teams', teams: 20, strict: false,
+    desc: 'Double round robin where head-to-head record comes before goal difference.',
+    build: domesticLeague([{ from: 1, to: 4, label: 'Champions League', color: ZC.blue }, { from: 5, to: 6, label: 'Europa League', color: ZC.orange }, { from: 7, to: 7, label: 'Conference League', color: ZC.teal }, { from: 18, to: 20, label: 'Relegation', color: ZC.red }], TB_H2H_FIRST) },
+  { id: 'seriea', cat: 'Domestic League', icon: '🇮🇹', name: 'Serie A style — 20 teams', teams: 20, strict: false,
+    desc: 'Double round robin with head-to-head tie-breakers first.',
+    build: domesticLeague([{ from: 1, to: 4, label: 'Champions League', color: ZC.blue }, { from: 5, to: 6, label: 'Europa League', color: ZC.orange }, { from: 18, to: 20, label: 'Relegation', color: ZC.red }], TB_H2H_FIRST) },
+  { id: 'bundesliga', cat: 'Domestic League', icon: '🇩🇪', name: 'Bundesliga style — 18 teams', teams: 18, strict: false,
+    desc: 'Double round robin, 34 matchdays, relegation play-off place.',
+    build: domesticLeague([{ from: 1, to: 4, label: 'Champions League', color: ZC.blue }, { from: 5, to: 6, label: 'Europa League', color: ZC.orange }, { from: 16, to: 16, label: 'Relegation play-off', color: ZC.orange }, { from: 17, to: 18, label: 'Relegation', color: ZC.red }]) },
+  { id: 'ligue1', cat: 'Domestic League', icon: '🇫🇷', name: 'Ligue 1 style — 18 teams', teams: 18, strict: false,
+    desc: 'Double round robin, 34 matchdays.',
+    build: domesticLeague([{ from: 1, to: 3, label: 'Champions League', color: ZC.blue }, { from: 4, to: 5, label: 'Europe', color: ZC.orange }, { from: 16, to: 16, label: 'Relegation play-off', color: ZC.orange }, { from: 17, to: 18, label: 'Relegation', color: ZC.red }]) },
+  { id: 'league1', cat: 'Domestic League', icon: '📋', name: 'Round robin league — single leg', teams: 8, strict: false,
+    desc: 'Everyone plays everyone once. Any number of teams (≥ 2).',
+    build: () => [newStage('league', { name: 'League', legs: 1 })] },
+  { id: 'league2', cat: 'Domestic League', icon: '🔁', name: 'Round robin league — home & away', teams: 10, strict: false,
+    desc: 'Everyone plays everyone home and away. Any number of teams (≥ 2).',
+    build: () => [newStage('league', { name: 'League', legs: 2 })] },
+  { id: 'leagueko', cat: 'Domestic League', icon: '🥇', name: 'League + Playoffs (top 4)', teams: 8, strict: false,
+    desc: 'Home & away league, top 4 into two-legged semi-finals and a one-off final (MLS / A-League / Apertura style).',
+    build: () => { const l = newStage('league', { name: 'Regular Season', legs: 2, zones: [{ from: 1, to: 4, label: 'Playoffs', color: ZC.green }] });
+      const k = newStage('knockout', { name: 'Playoffs', sources: [{ stage: l.id, kind: 'rank', from: 1, to: 4 }], pairing: 'seeded', koLegs: 2, finalLegs: 1 }); return [l, k]; } },
+  { id: 'ko', cat: 'Knockout', icon: '⚔️', name: 'Simple Knockout — single leg', teams: 16, strict: false,
+    desc: 'Straight elimination. Any number of teams — byes are handed to the top seeds automatically.',
+    build: () => [newStage('knockout', { name: 'Knockout', pairing: 'seeded', koLegs: 1, finalLegs: 1 })] },
+  { id: 'ko2', cat: 'Knockout', icon: '↔️', name: 'Knockout — two legs, one-off final', teams: 16, strict: false,
+    desc: 'Every round home & away on aggregate, the final in a single match. Any number of teams.',
+    build: () => [newStage('knockout', { name: 'Knockout', pairing: 'seeded', koLegs: 2, finalLegs: 1, awayGoals: false })] },
+  { id: 'kornd', cat: 'Knockout', icon: '🎲', name: 'Random-draw Cup', teams: 16, strict: false,
+    desc: 'Like the FA Cup / domestic cups: a fully random draw, single-leg ties, byes where needed.',
+    build: () => [newStage('knockout', { name: 'Cup', pairing: 'random' })] },
+  { id: 'custom', cat: 'Custom', icon: '🛠️', name: 'Blank — build your own', teams: 0, strict: false,
+    desc: 'Start empty and chain any stages together in the Format tab: leagues, groups, league phases and knockouts.',
+    build: () => [] }
+];
+
+const SAMPLES = {
+  national: { label: 'National teams (64)', list: 'Argentina|ARG,Brazil|BRA,France|FRA,England|ENG,Spain|ESP,Portugal|POR,Netherlands|NED,Belgium|BEL,Germany|GER,Italy|ITA,Croatia|CRO,Uruguay|URU,Colombia|COL,Morocco|MAR,Japan|JPN,USA|USA,Mexico|MEX,Senegal|SEN,Switzerland|SUI,Denmark|DEN,Iran|IRN,South Korea|KOR,Australia|AUS,Ecuador|ECU,Austria|AUT,Ukraine|UKR,Poland|POL,Sweden|SWE,Serbia|SRB,Turkey|TUR,Egypt|EGY,Nigeria|NGA,Algeria|ALG,Canada|CAN,Norway|NOR,Tunisia|TUN,Ivory Coast|CIV,Paraguay|PAR,Czechia|CZE,Scotland|SCO,Wales|WAL,Ghana|GHA,Cameroon|CMR,Saudi Arabia|KSA,Qatar|QAT,Peru|PER,Chile|CHI,Costa Rica|CRC,Hungary|HUN,Romania|ROU,Slovakia|SVK,Slovenia|SVN,Greece|GRE,Jamaica|JAM,Panama|PAN,Uzbekistan|UZB,Jordan|JOR,Iraq|IRQ,UAE|UAE,South Africa|RSA,Mali|MLI,DR Congo|COD,New Zealand|NZL,Venezuela|VEN' },
+  epl: { label: 'English clubs (20)', list: 'Arsenal,Aston Villa,Bournemouth,Brentford,Brighton,Burnley,Chelsea,Crystal Palace,Everton,Fulham,Leeds United,Liverpool,Manchester City,Manchester United,Newcastle United,Nottingham Forest,Sunderland,Tottenham Hotspur,West Ham United,Wolverhampton' },
+  laliga: { label: 'Spanish clubs (20)', list: 'Real Madrid,Barcelona,Atletico Madrid,Athletic Club,Real Sociedad,Villarreal,Real Betis,Sevilla,Valencia,Girona,Celta Vigo,Osasuna,Getafe,Rayo Vallecano,Mallorca,Espanyol,Alaves,Elche,Levante,Real Oviedo' },
+  seriea: { label: 'Italian clubs (20)', list: 'Inter,AC Milan,Juventus,Napoli,Atalanta,Roma,Lazio,Fiorentina,Bologna,Torino,Udinese,Genoa,Como,Cagliari,Sassuolo,Parma,Lecce,Verona,Cremonese,Pisa' },
+  bundesliga: { label: 'German clubs (18)', list: 'Bayern Munich,Borussia Dortmund,RB Leipzig,Bayer Leverkusen,Eintracht Frankfurt,VfB Stuttgart,Gladbach,Werder Bremen,Freiburg,Wolfsburg,Hoffenheim,Mainz,Augsburg,Union Berlin,Heidenheim,St. Pauli,FC Koln,Hamburg' },
+  ligue1: { label: 'French clubs (18)', list: 'Paris Saint-Germain,Marseille,Monaco,Lyon,Lille,Nice,Lens,Rennes,Strasbourg,Toulouse,Nantes,Brest,Auxerre,Angers,Le Havre,Lorient,Metz,Paris FC' },
+  ucl: { label: 'European elite clubs (36)', list: 'Real Madrid,Manchester City,Bayern Munich,Liverpool,Inter,Paris Saint-Germain,Arsenal,Barcelona,Atletico Madrid,Bayer Leverkusen,Borussia Dortmund,AC Milan,Atalanta,Juventus,Benfica,Sporting CP,Porto,PSV Eindhoven,Feyenoord,Celtic,Club Brugge,Shakhtar Donetsk,Red Bull Salzburg,Aston Villa,Napoli,Tottenham Hotspur,Chelsea,Newcastle United,Galatasaray,Olympiacos,Eintracht Frankfurt,Marseille,Villarreal,Copenhagen,Bodo/Glimt,Union Saint-Gilloise' }
+};
+function sampleTeams(key, n) {
+  const out = []; const src = SAMPLES[key] ? SAMPLES[key].list.split(',') : [];
+  for (let i = 0; i < n; i++) {
+    if (src[i]) { const [name, code] = src[i].split('|'); out.push(newTeam(name, code ? { short: code } : {})); }
+    else out.push(newTeam('Team ' + (i + 1), { short: 'T' + String(i + 1).padStart(2, '0') }));
+  }
+  return out;
+}
+
+/* =====================================================================
+   UI CORE — state, persistence, events, shared helpers, home, wizard
+   ===================================================================== */
+const KEY = 'matchday-manager-v1';
+const S = { db: null, tab: 'overview', fx: { stage: 'all', group: 'all', round: 'cur', team: 'all', status: 'all', q: '' }, tb: { stage: null, ext: false }, bk: { stage: null }, ss: { stage: 'all' }, mm: null, modal: null, confirm: null, hist: [], wz: null, work: null };
+const A = {}, CHG = {}, V = {};
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const cur = () => S.db.tournaments.find(t => t.id === S.db.activeId) || null;
+const getStage = (t, id) => t.stages.find(s => s.id === id);
+const fmtDate = d => d ? new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }) : '';
+const pct = (a, b) => b ? Math.round(100 * a / b) : 0;
+
+/* ---------- persistence ---------- */
+function load() {
+  let db = null;
+  try { db = JSON.parse(localStorage.getItem(KEY)); } catch (e) { }
+  if (!db || !Array.isArray(db.tournaments)) {
+    let light = false; try { light = window.matchMedia('(prefers-color-scheme: light)').matches; } catch (e) { }
+    db = { v: 1, tournaments: [], activeId: null, theme: light ? 'light' : 'dark' };
+  }
+  S.db = db;
+  db.tournaments.forEach(t => { try { recompute(t); } catch (e) { console.error(e); } });
+  if (db.activeId && !cur()) db.activeId = null;
+}
+let saveTimer = null;
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S.db)); }
+  catch (e) { toast('Could not save in this browser — use Data → Export to keep a copy.', true); }
+}
+function pushHist(t) { S.hist.push({ id: t.id, json: JSON.stringify(t) }); if (S.hist.length > 50) S.hist.shift(); }
+function restore(entry) {
+  const i = S.db.tournaments.findIndex(x => x.id === entry.id); if (i < 0) return;
+  const t = JSON.parse(entry.json); S.db.tournaments[i] = t; recompute(t);
+}
+function mutate(fn, o = {}) {
+  const t = cur(); if (!t) return;
+  pushHist(t);
+  try { fn(t); recompute(t); }
+  catch (e) { console.error(e); const h = S.hist.pop(); if (h) restore(h); toast(e.message || 'Something went wrong', true); render(); return false; }
+  t.updatedAt = Date.now(); save();
+  const n = IDX(t).resets; if (n) toast(n + ' later-round result' + (n > 1 ? 's were' : ' was') + ' cleared because the teams in those fixtures changed.');
+  if (!o.quiet) render();
+  return true;
+}
+A.undo = () => {
+  const t = cur(); if (!t) return;
+  for (let i = S.hist.length - 1; i >= 0; i--) if (S.hist[i].id === t.id) { const [h] = S.hist.splice(i, 1); restore(h); save(); toast('Undone'); render(); return; }
+  toast('Nothing to undo');
+};
+function toast(msg, err) {
+  const el = document.createElement('div'); el.className = 'toast' + (err ? ' err' : ''); el.textContent = msg; document.body.appendChild(el);
+  setTimeout(() => el.remove(), err ? 4200 : 2600);
+}
+function ask(msg, yes, no, o = {}) { S.confirm = { msg, yes, no, label: o.label || 'Confirm', danger: o.danger !== false }; renderModal(); }
+A.cfyes = () => { const c = S.confirm; S.confirm = null; renderModal(); if (c && c.yes) c.yes(); };
+A.cfno = () => { const c = S.confirm; S.confirm = null; renderModal(); if (c && c.no) c.no(); };
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const ov = e.target.classList && e.target.classList.contains('ov') ? e.target : null;
+  if (ov && ov.id === 'ov-main') { A.closemodal(); return; }
+  const el = e.target.closest('[data-act]'); if (!el || el.disabled) return;
+  const f = A[el.dataset.act]; if (f) { e.preventDefault(); f(el, e); } else console.warn('Unknown action', el.dataset.act);
+});
+document.addEventListener('change', e => { const el = e.target.closest && e.target.closest('[data-chg]'); if (el && CHG[el.dataset.chg]) CHG[el.dataset.chg](el, e); mmInput(e); });
+document.addEventListener('input', e => mmInput(e));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (S.confirm) A.cfno(); else if (S.modal) A.closemodal(); }
+  if (e.key === 'Enter' && e.target.matches && e.target.matches('input.sc')) e.target.blur();
+});
+
+/* ---------- rendering ---------- */
+function render() {
+  const sy = window.scrollY;
+  document.documentElement.dataset.theme = S.db.theme;
+  $('app').innerHTML = view();
+  renderModal();
+  window.scrollTo(0, sy);
+}
+function renderModal() {
+  const m = $('modal'), c = $('confirm');
+  const prev = m.firstElementChild ? m.firstElementChild.scrollTop : 0;
+  m.innerHTML = S.modal ? modalHtml() : '';
+  if (m.firstElementChild && prev) m.firstElementChild.scrollTop = prev;
+  c.innerHTML = S.confirm ? `<div class="ov" style="z-index:70;align-items:center"><div class="modal sm"><div class="mb2"><p style="margin:0 0 6px;font-size:15px">${esc(S.confirm.msg)}</p></div><div class="mf"><button class="btn" data-act="cfno">Cancel</button><button class="btn ${S.confirm.danger ? 'danger' : 'primary'}" data-act="cfyes">${esc(S.confirm.label)}</button></div></div></div>` : '';
+}
+A.closemodal = () => { S.modal = null; S.mm = null; S.work = null; S.wz = null; renderModal(); };
+function openModal(m) { S.modal = m; renderModal(); }
+function view() {
+  const t = cur();
+  let h = `<header class="top"><div class="brand" data-act="home"><span class="ball">⚽</span><span>Matchday</span><small>Tournament Manager</small></div>`;
+  if (t) h += `<select data-chg="switch" title="Switch tournament">${S.db.tournaments.map(x => `<option value="${x.id}" ${x.id === t.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>`;
+  h += `<div class="spacer"></div>`;
+  if (t) h += `<button class="btn sm" data-act="undo" title="Undo last change">↶ Undo</button>`;
+  h += `<button class="btn sm" data-act="theme">${S.db.theme === 'dark' ? '☀ Light' : '🌙 Dark'}</button></header>`;
+  if (!t) return h + `<main>${homeView()}</main>`;
+  const val = validate(t); const nerr = val.filter(v => v.lvl === 'error').length;
+  const tabs = [['overview', 'Overview'], ['teams', 'Teams'], ['format', 'Format'], ['fixtures', 'Fixtures & Results'], ['tables', 'Tables'], ['bracket', 'Bracket'], ['stats', 'Stats'], ['data', 'Data']];
+  h += `<nav class="tabs">${tabs.map(([k, l]) => `<button class="tab ${S.tab === k ? 'on' : ''}" data-act="tab" data-tab="${k}">${l}${k === 'format' && nerr ? `<span class="badge">${nerr}</span>` : ''}</button>`).join('')}</nav>`;
+  return h + `<main>${V[S.tab](t)}</main>`;
+}
+A.tab = el => { S.tab = el.dataset.tab; render(); window.scrollTo(0, 0); };
+A.home = () => { S.db.activeId = null; save(); render(); };
+A.theme = () => { S.db.theme = S.db.theme === 'dark' ? 'light' : 'dark'; save(); render(); };
+CHG.switch = el => { S.db.activeId = el.value; S.tab = 'overview'; save(); render(); };
+A.open = el => { S.db.activeId = el.dataset.id; S.tab = 'overview'; save(); render(); window.scrollTo(0, 0); };
+
+/* ---------- shared view helpers ---------- */
+function crest(t, id, cls = '') {
+  const tm = id && teamById(t, id);
+  if (!tm) return `<span class="crest ${cls}" style="background:var(--surface2);color:var(--muted)">?</span>`;
+  return `<span class="crest ${cls}" style="background:${esc(tm.color)}">${esc(tm.short)}</span>`;
+}
+function tmCell(t, id, label, rev) {
+  const tm = id && teamById(t, id);
+  return `<span class="tm ${tm ? '' : 'tbd'} ${rev ? 'rev' : ''}">${crest(t, id)}<span class="nm">${esc(tm ? tm.name : (label || 'TBD'))}</span></span>`;
+}
+function srcLabel(t, s, tie, key) {
+  const src = key === 'a' ? tie.srcA : tie.srcB;
+  if (!src) return 'TBD';
+  const st = s.ties.find(x => x.id === src.tie); if (!st) return 'TBD';
+  return (src.as === 'w' ? 'Winner ' : 'Loser ') + roundLabel(s, st) + (st.third ? '' : ' ' + (st.idx + 1));
+}
+function matchSlots(s, tie, m) {
+  const L = tie.matchIds.length; if (L === 1) return ['a', 'b'];
+  const i = tie.matchIds.indexOf(m.id); const f = s.higherSeedSecondLeg !== false ? 'b' : 'a', o = f === 'a' ? 'b' : 'a';
+  return i % 2 === 0 ? [f, o] : [o, f];
+}
+function roundTitle(t, s, m) {
+  if (s.type === 'knockout') { const tie = s.ties.find(x => x.id === m.tieId); return tie ? roundLabel(s, tie) : 'Round ' + (m.round + 1); }
+  return 'Matchday ' + (m.round + 1);
+}
+const statusChip = info => {
+  if (info.stale) return '<span class="chip warn">⚠ Out of date</span>';
+  return ({ pending: '<span class="chip">⏳ Waiting</span>', ready: '<span class="chip info">Ready to generate</span>', scheduled: '<span class="chip">Scheduled</span>', active: '<span class="chip ok">● In progress</span>', complete: '<span class="chip ok">✔ Complete</span>' })[info.status];
+};
+const emptyBox = (icon, title, body) => `<div class="empty"><div class="big">${icon}</div><b>${title}</b><div>${body || ''}</div></div>`;
+
+/* ---------- home ---------- */
+function homeView() {
+  const L = S.db.tournaments;
+  let h = `<div class="card"><div class="card-h"><div style="flex:1"><h2 style="font-size:24px">Your tournaments</h2><div class="muted">Build any football competition — leagues, cups, group stages, league phases and brackets. Fixtures, tables, brackets and stats update themselves as you enter results.</div></div><button class="btn primary" data-act="new">＋ New tournament</button><button class="btn" data-act="import">Import JSON</button></div></div>`;
+  if (!L.length) {
+    h += `<div class="card">${emptyBox('🏟️', 'No tournaments yet', 'Pick a preset (World Cup, Champions League, Premier League, simple knockout…) or build a custom format from scratch.')}<div class="row" style="justify-content:center"><button class="btn primary" data-act="new">＋ Create your first tournament</button></div></div>`;
+    return h;
+  }
+  h += `<div class="grid g3">` + L.map(t => {
+    const idx = IDX(t); const total = t.matches.length, played = t.matches.filter(isPlayed).length; const sm = idx.summary || {};
+    return `<div class="card tcard"><h3>${esc(t.name)}</h3><div class="muted small">${esc(t.season || '')} ${t.stages.length ? '· ' + t.stages.map(s => esc(s.name)).join(' → ') : ''}</div>
+      <div class="row"><span class="chip">${t.teams.length} teams</span><span class="chip">${played}/${total} played</span>${sm.champion ? `<span class="chip ok">🏆 ${esc(teamName(t, sm.champion))}</span>` : ''}</div>
+      <div class="progress"><i style="width:${pct(played, total)}%"></i></div>
+      <div class="row"><button class="btn primary sm" data-act="open" data-id="${t.id}">Open</button><button class="btn sm" data-act="dup" data-id="${t.id}">Duplicate</button><button class="btn sm danger" data-act="del" data-id="${t.id}">Delete</button></div></div>`;
+  }).join('') + `</div>`;
+  return h;
+}
+A.dup = el => {
+  const t = S.db.tournaments.find(x => x.id === el.dataset.id); if (!t) return;
+  const c = JSON.parse(JSON.stringify(t)); c.id = uid('tn'); c.name = t.name + ' (copy)'; c.createdAt = Date.now(); S.db.tournaments.push(c); recompute(c); save(); render(); toast('Duplicated');
+};
+A.del = el => {
+  const t = S.db.tournaments.find(x => x.id === el.dataset.id); if (!t) return;
+  ask('Delete “' + t.name + '” permanently? Export it first if you may need it again.', () => {
+    S.db.tournaments = S.db.tournaments.filter(x => x.id !== t.id); if (S.db.activeId === t.id) S.db.activeId = null; save(); render();
+  }, null, { label: 'Delete', danger: true });
+};
+A.import = () => $('file').click();
+function importData(text) {
+  let d; try { d = JSON.parse(text); } catch (e) { return toast('That file is not valid JSON.', true); }
+  const list = Array.isArray(d.tournaments) ? d.tournaments : (d && d.teams && d.stages ? [d] : null);
+  if (!list) return toast('Not a Matchday export.', true);
+  list.forEach(t => { t.id = uid('tn'); S.db.tournaments.push(t); try { recompute(t); } catch (e) { } });
+  save(); render(); toast('Imported ' + list.length + ' tournament' + (list.length > 1 ? 's' : ''));
+}
+
+/* ---------- new tournament wizard ---------- */
+A.new = () => { const p = PRESETS[0]; S.wz = { preset: p.id, name: '', season: String(new Date().getFullYear()), count: p.teams, sample: 'national', gen: true }; openModal({ kind: 'new' }); };
+function wizardHtml() {
+  const w = S.wz; const P = PRESETS.find(x => x.id === w.preset);
+  const cats = [...new Set(PRESETS.map(p => p.cat))];
+  return `<div class="ov" id="ov-main"><div class="modal lg"><div class="mh"><h3>New tournament</h3><button class="btn sm ghost" data-act="closemodal">✕</button></div><div class="mb2">
+    <div class="fields w2 mb"><label class="fld"><span>Tournament name</span><input type="text" data-chg="wz" data-k="name" value="${esc(w.name)}" placeholder="${esc(P.name.split(' — ')[0])}"></label>
+    <label class="fld"><span>Season / edition</span><input type="text" data-chg="wz" data-k="season" value="${esc(w.season)}"></label>
+    <label class="fld"><span>Number of teams</span><input type="number" min="${P.id === 'custom' ? 0 : 2}" max="128" data-chg="wz" data-k="count" value="${w.count}"></label>
+    <label class="fld"><span>Start with teams</span><select data-chg="wz" data-k="sample"><option value="none" ${w.sample === 'none' ? 'selected' : ''}>Empty — I’ll add my own</option><option value="generic" ${w.sample === 'generic' ? 'selected' : ''}>Placeholders (Team 1, Team 2…)</option>${Object.entries(SAMPLES).map(([k, v]) => `<option value="${k}" ${w.sample === k ? 'selected' : ''}>${esc(v.label)}</option>`).join('')}</select></label></div>
+    ${cats.map(c => `<div class="cat">${esc(c)}</div><div class="presets">${PRESETS.filter(p => p.cat === c).map(p => `<div class="pcard ${w.preset === p.id ? 'on' : ''}" data-act="wzpick" data-id="${p.id}"><span class="ic">${p.icon}</span><b>${esc(p.name)}</b><small>${esc(p.desc)}</small></div>`).join('')}</div>`).join('')}
+    <div class="row mt"><label class="row" style="gap:6px"><input type="checkbox" data-chg="wz" data-k="gen" ${w.gen ? 'checked' : ''}> Generate fixtures straight away (when the team count is valid)</label></div>
+    </div><div class="mf"><button class="btn" data-act="closemodal">Cancel</button><button class="btn primary" data-act="wzcreate">Create tournament</button></div></div></div>`;
+}
+A.wzpick = el => {
+  const p = PRESETS.find(x => x.id === el.dataset.id); S.wz.preset = p.id; S.wz.count = p.teams;
+  if (p.id === 'custom') S.wz.sample = 'none'; else if (S.wz.sample === 'none' && p.teams) S.wz.sample = 'generic';
+  if (p.id.startsWith('uc') || p.id === 'uel36') S.wz.sample = 'ucl'; else if (p.id === 'epl') S.wz.sample = 'epl'; else if (p.id === 'laliga') S.wz.sample = 'laliga';
+  else if (p.id === 'seriea') S.wz.sample = 'seriea'; else if (p.id === 'bundesliga') S.wz.sample = 'bundesliga'; else if (p.id === 'ligue1') S.wz.sample = 'ligue1'; else if (p.cat === 'International') S.wz.sample = 'national';
+  renderModal();
+};
+CHG.wz = el => { const k = el.dataset.k; S.wz[k] = el.type === 'checkbox' ? el.checked : (k === 'count' ? Math.max(0, Math.min(128, parseInt(el.value) || 0)) : el.value); if (k === 'count' || k === 'sample') renderModal(); };
+A.wzcreate = () => {
+  const w = S.wz; const P = PRESETS.find(x => x.id === w.preset);
+  const t = newTournament({ name: w.name.trim() || P.name.split(' — ')[0], season: w.season, preset: P.id });
+  t.stages = P.build(); t.targetTeams = (P.strict && w.count) ? w.count : null;
+  if (w.sample !== 'none' && w.count > 0) t.teams = sampleTeams(w.sample === 'generic' ? 'x' : w.sample, w.count);
+  S.db.tournaments.push(t); S.db.activeId = t.id; S.wz = null; S.modal = null; S.hist = [];
+  recompute(t);
+  if (w.gen && t.stages.length && t.teams.length >= 2 && !validate(t).some(v => v.lvl === 'error')) {
+    try { regenStage(t, t.stages[0]); } catch (e) { toast(e.message, true); }
+  }
+  save(); S.tab = t.teams.length >= 2 && t.stages.length ? (t.matches.length ? 'fixtures' : 'format') : (t.teams.length ? 'format' : 'teams'); render(); window.scrollTo(0, 0);
+};
+
+/* =====================================================================
+   VIEWS (1/2): Overview, Teams, Format
+   ===================================================================== */
+function matchMini(t, m) {
+  const s = stageById(t, m.stageId);
+  return `<div class="mini" style="cursor:pointer" data-act="mm" data-ids="${m.tieId && s ? s.ties.find(x => x.id === m.tieId).matchIds.join(',') : m.id}">
+    <span class="tm" style="justify-content:flex-end;flex:1">${tmCell(t, m.home, '', true)}</span>
+    <span class="sc">${isPlayed(m) ? m.hg + ' – ' + m.ag : '<span class="muted">v</span>'}</span>
+    <span class="tm" style="flex:1">${tmCell(t, m.away)}</span></div>
+    <div class="tiny muted center" style="margin:-4px 0 4px">${esc(s ? s.name : '')} · ${esc(roundTitle(t, s, m))}${m.group ? ' · ' + esc(m.group) : ''}${m.date ? ' · ' + fmtDate(m.date) : ''}</div>`;
+}
+V.overview = t => {
+  const idx = IDX(t); const sm = idx.summary || {};
+  const total = t.matches.length, played = t.matches.filter(isPlayed);
+  const goals = played.reduce((a, m) => a + m.hg + m.ag, 0);
+  const val = validate(t).filter(v => v.lvl !== 'info');
+  let h = '';
+  if (sm.champion) {
+    h += `<div class="champ"><div class="trophy">🏆</div><div style="flex:1"><div class="muted small bold">CHAMPIONS · ${esc(t.name)} ${esc(t.season)}</div><h2>${esc(teamName(t, sm.champion))}</h2><div class="muted">${sm.runnerUp ? 'Runner-up: <b>' + esc(teamName(t, sm.runnerUp)) + '</b>' : ''}${sm.third ? ' · Third: <b>' + esc(teamName(t, sm.third)) + '</b>' : ''}</div></div>${crest(t, sm.champion, 'lg')}</div>`;
+  }
+  h += `<div class="grid g4 mb"><div class="kpi"><b>${t.teams.length}</b><span>Teams${t.targetTeams ? ' (need ' + t.targetTeams + ')' : ''}</span></div><div class="kpi"><b>${played.length}<small class="muted"> / ${total}</small></b><span>Matches played</span></div><div class="kpi"><b>${goals}</b><span>Goals · ${played.length ? (goals / played.length).toFixed(2) : '0.00'} per match</span></div><div class="kpi"><b>${t.stages.filter(s => idx.info[s.id].status === 'complete').length}<small class="muted"> / ${t.stages.length}</small></b><span>Stages complete</span></div></div>`;
+  if (total) h += `<div class="progress mb"><i style="width:${pct(played.length, total)}%"></i></div>`;
+  if (val.length) h += `<div class="card"><div class="card-h"><h3>Needs attention</h3><button class="btn sm" data-act="tab" data-tab="format">Open Format</button></div>${val.map(v => `<div class="callout ${v.lvl === 'error' ? 'error' : 'warn'}">${v.lvl === 'error' ? '⛔' : '⚠'} <span>${esc(v.msg)}</span></div>`).join('')}</div>`;
+  h += `<div class="card"><h3 class="mb">Stages</h3>` + (t.stages.length ? t.stages.map((s, i) => {
+    const info = idx.info[s.id];
+    return `<div class="mini"><span class="chip">${i + 1}</span><b style="flex:1">${esc(s.name)} <span class="muted small">· ${esc(STAGE_TYPES[s.type])}</span></b>${info.status === 'pending' ? `<span class="muted small">${esc(info.reason || '')}</span>` : ''}${info.total ? `<span class="muted small">${info.played}/${info.total}</span>` : ''}${statusChip(info)}</div>`;
+  }).join('') : '<div class="muted">No stages yet.</div>') + `</div>`;
+  const ready = t.matches.filter(m => m.home && m.away);
+  const stIdx = id => t.stages.findIndex(s => s.id === id);
+  const upcoming = ready.filter(m => !isPlayed(m)).sort((a, b) => (stIdx(a.stageId) - stIdx(b.stageId)) || (a.round - b.round) || ((a.date || '9') < (b.date || '9') ? -1 : 1)).slice(0, 7);
+  const latest = ready.filter(isPlayed).sort((a, b) => (stIdx(b.stageId) - stIdx(a.stageId)) || (b.round - a.round) || ((b.date || '') < (a.date || '') ? -1 : 1)).slice(0, 7);
+  h += `<div class="grid g2"><div class="card"><h3 class="mb">Next up</h3>${upcoming.length ? upcoming.map(m => matchMini(t, m)).join('') : '<div class="muted">No fixtures waiting.</div>'}</div>
+  <div class="card"><h3 class="mb">Latest results</h3>${latest.length ? latest.map(m => matchMini(t, m)).join('') : '<div class="muted">No results yet — enter scores in Fixtures & Results.</div>'}</div></div>`;
+  const ps = playerStats(t).filter(p => p.goals > 0).sort((a, b) => b.goals - a.goals || a.pens - b.pens || b.assists - a.assists).slice(0, 5);
+  if (ps.length) h += `<div class="card"><div class="card-h"><h3>Top scorers</h3><button class="btn sm" data-act="tab" data-tab="stats">All stats</button></div>${ps.map((p, i) => `<div class="mini"><span class="muted" style="width:20px">${i + 1}</span>${tmCell(t, p.team, '')}<b style="flex:1">${esc(p.player)}</b><b class="tabnum">${p.goals}</b></div>`).join('')}</div>`;
+  return h;
+};
+
+/* ---------------- TEAMS ---------------- */
+V.teams = t => {
+  const n = t.teams.length, tg = t.targetTeams; const s0 = t.stages[0];
+  let h = `<div class="card"><div class="card-h"><h2>Teams</h2><span class="chip ${tg ? (n === tg ? 'ok' : 'err') : ''}">${n}${tg ? ' / ' + tg + ' needed' : ''}</span>
+    <button class="btn sm primary" data-act="tmadd">＋ Add team</button><button class="btn sm" data-act="tmbulk">Bulk add…</button><button class="btn sm" data-act="tmsample">Sample teams…</button>
+    ${tg && n < tg ? `<button class="btn sm" data-act="tmfill">Fill to ${tg}</button>` : ''}<button class="btn sm" data-act="tmsort">Sort A–Z</button><button class="btn sm" data-act="tmshuffle">Shuffle order</button><button class="btn sm" data-act="tmpots">Auto-assign pots</button></div>
+    <div class="hint mb">The order of this list is the <b>seeding</b>: it decides byes, bracket positions and (unless you set pots) which pot a team falls in. Pots are optional — group and league-phase draws give each group one team from every pot.</div>`;
+  if (s0 && !s0.generated && n >= 2) h += `<div class="callout warn">⚠ <span>Fixtures aren’t generated yet. Go to <b>Format</b> and press <b>Generate fixtures</b>.</span></div>`;
+  if (s0 && IDX(t).info[s0.id].stale) h += `<div class="callout warn">⚠ <span>The team list no longer matches the generated fixtures (results exist). Regenerate from Format if you want to start over.</span></div>`;
+  if (!n) h += emptyBox('👕', 'No teams yet', 'Add teams one by one, paste a list with “Bulk add”, or load sample teams.');
+  else h += `<div class="tw"><table class="tbl"><thead><tr><th>Seed</th><th></th><th class="l">Name</th><th>Short</th><th>Colour</th><th>Pot</th><th>Squad</th><th></th></tr></thead><tbody>` +
+    t.teams.map((tm, i) => `<tr><td class="n bold">${i + 1}</td><td>${crest(t, tm.id)}</td>
+      <td class="l"><input type="text" data-chg="tm" data-id="${tm.id}" data-k="name" value="${esc(tm.name)}" style="min-width:160px"></td>
+      <td><input type="text" data-chg="tm" data-id="${tm.id}" data-k="short" value="${esc(tm.short)}" maxlength="4" style="width:64px;text-align:center"></td>
+      <td><input type="color" data-chg="tm" data-id="${tm.id}" data-k="color" value="${esc(tm.color)}"></td>
+      <td><input type="number" min="0" max="12" data-chg="tm" data-id="${tm.id}" data-k="pot" value="${tm.pot || ''}" placeholder="–" style="width:62px;text-align:center"></td>
+      <td><button class="btn sm" data-act="tmplayers" data-id="${tm.id}">${tm.players.length} players</button></td>
+      <td style="white-space:nowrap"><button class="btn sm icon" data-act="tmup" data-id="${tm.id}" ${i === 0 ? 'disabled' : ''}>↑</button> <button class="btn sm icon" data-act="tmdn" data-id="${tm.id}" ${i === n - 1 ? 'disabled' : ''}>↓</button> <button class="btn sm icon danger" data-act="tmdel" data-id="${tm.id}">✕</button></td></tr>`).join('') + `</tbody></table></div>`;
+  return h + `</div>`;
+};
+CHG.tm = el => {
+  const id = el.dataset.id, k = el.dataset.k;
+  mutate(t => {
+    const tm = t.teams.find(x => x.id === id); if (!tm) return;
+    if (k === 'name') { const v = el.value.trim(); if (v) { const auto = tm.short === shortOf(tm.name); tm.name = v; if (auto) tm.short = shortOf(v); } }
+    else if (k === 'short') tm.short = el.value.trim().toUpperCase().slice(0, 4) || shortOf(tm.name);
+    else if (k === 'pot') tm.pot = Math.max(0, parseInt(el.value) || 0);
+    else tm[k] = el.value;
+  });
+};
+A.tmadd = () => mutate(t => { let k = t.teams.length + 1; while (t.teams.some(x => x.name === 'Team ' + k)) k++; t.teams.push(newTeam('Team ' + k, { short: 'T' + String(k).padStart(2, '0') })); });
+A.tmfill = () => mutate(t => { let k = 1; while (t.teams.length < t.targetTeams) { while (t.teams.some(x => x.name === 'Team ' + k)) k++; t.teams.push(newTeam('Team ' + k, { short: 'T' + String(k).padStart(2, '0') })); } });
+A.tmdel = el => {
+  const t = cur(); const tm = t.teams.find(x => x.id === el.dataset.id); const s0 = t.stages[0];
+  const go = () => mutate(t => { t.teams = t.teams.filter(x => x.id !== tm.id); });
+  if (s0 && s0.generated && stageHasResults(t, s0)) ask('Remove ' + tm.name + '? Fixtures already have results, so the stage will be flagged out of date.', go, null, { label: 'Remove' }); else go();
+};
+A.tmup = el => mutate(t => { const i = t.teams.findIndex(x => x.id === el.dataset.id); if (i > 0) [t.teams[i - 1], t.teams[i]] = [t.teams[i], t.teams[i - 1]]; });
+A.tmdn = el => mutate(t => { const i = t.teams.findIndex(x => x.id === el.dataset.id); if (i < t.teams.length - 1) [t.teams[i + 1], t.teams[i]] = [t.teams[i], t.teams[i + 1]]; });
+A.tmsort = () => mutate(t => t.teams.sort((a, b) => a.name.localeCompare(b.name)));
+A.tmshuffle = () => mutate(t => { t.teams = shuffle(t.teams, Math.random); });
+A.tmpots = () => {
+  const t = cur(); const s0 = t.stages[0]; let per = 4;
+  if (s0 && s0.type === 'groups') per = Math.max(1, s0.numGroups | 0); else if (s0 && s0.type === 'swiss') per = Math.ceil(t.teams.length / Math.max(1, s0.numPots | 0));
+  mutate(t => t.teams.forEach((tm, i) => tm.pot = Math.floor(i / per) + 1));
+  toast('Pots assigned in seed order (' + per + ' teams per pot)');
+};
+A.tmbulk = () => openModal({ kind: 'bulk', text: '', replace: false });
+A.tmsample = () => openModal({ kind: 'sample', key: 'national', count: cur().targetTeams || cur().teams.length || 16, replace: true });
+A.tmplayers = el => { const tm = teamById(cur(), el.dataset.id); openModal({ kind: 'players', id: tm.id, text: tm.players.join('\n') }); };
+CHG.mtxt = el => { if (S.modal) S.modal[el.dataset.k] = el.type === 'checkbox' ? el.checked : el.value; };
+document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.chg === 'mtxt' && S.modal) S.modal[el.dataset.k] = el.type === 'checkbox' ? el.checked : el.value; });
+A.bulksave = () => {
+  const m = S.modal; const lines = m.text.split('\n').map(x => x.trim()).filter(Boolean);
+  if (!lines.length) return toast('Nothing to add', true);
+  A.closemodal();
+  mutate(t => {
+    if (m.replace) t.teams = [];
+    lines.forEach(l => { const [name, short, color] = l.split(/[,;\t]/).map(x => x.trim()); if (!name) return; if (t.teams.some(x => x.name.toLowerCase() === name.toLowerCase())) return; t.teams.push(newTeam(name, { short: short && short.length <= 4 ? short : undefined, color: /^#[0-9a-f]{6}$/i.test(color || '') ? color : undefined })); });
+  });
+};
+A.samplesave = () => {
+  const m = S.modal; A.closemodal();
+  mutate(t => { const list = sampleTeams(m.key, Math.max(1, parseInt(m.count) || 1)); if (m.replace) t.teams = list; else list.forEach(x => { if (!t.teams.some(y => y.name === x.name)) t.teams.push(x); }); });
+};
+A.playersave = () => {
+  const m = S.modal; A.closemodal();
+  mutate(t => { const tm = t.teams.find(x => x.id === m.id); tm.players = [...new Set(m.text.split('\n').map(x => x.trim()).filter(Boolean))]; });
+};
+
+/* ---------------- FORMAT ---------------- */
+const cfgIn = (s, k, o = {}) => `<input type="${o.type || 'number'}" data-chg="cfg" data-sid="${s.id}" data-k="${k}" data-t="${o.t || 'int'}" ${o.struct ? 'data-s="1"' : ''} value="${esc(k.includes('.') ? k.split('.').reduce((a, b) => a[b], s) : s[k])}" ${o.min != null ? `min="${o.min}"` : ''} ${o.max != null ? `max="${o.max}"` : ''} ${o.ph ? `placeholder="${esc(o.ph)}"` : ''}>`;
+const cfgSel = (s, k, opts, o = {}) => `<select data-chg="cfg" data-sid="${s.id}" data-k="${k}" data-t="${o.t || 'str'}" ${o.struct ? 'data-s="1"' : ''}>${opts.map(([v, l]) => `<option value="${esc(v)}" ${String(s[k]) === String(v) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+const cfgChk = (s, k, label, o = {}) => `<label class="fld chk"><input type="checkbox" data-chg="cfg" data-sid="${s.id}" data-k="${k}" data-t="bool" ${o.struct ? 'data-s="1"' : ''} ${s[k] ? 'checked' : ''}><span>${label}</span></label>`;
+const fld = (label, inner, cls = '') => `<label class="fld ${cls}"><span>${label}</span>${inner}</label>`;
+CHG.cfg = el => {
+  const sid = el.dataset.sid, k = el.dataset.k, ty = el.dataset.t, struct = el.dataset.s === '1';
+  let v = el.value;
+  if (ty === 'bool') v = el.checked; else if (ty === 'int') v = Math.max(parseInt(el.min) || 0, parseInt(v) || 0); else if (ty === 'float') v = parseFloat(v) || 0;
+  if (ty === 'int' && el.max) v = Math.min(parseInt(el.max), v);
+  const t = cur(); const s0 = getStage(t, sid);
+  const apply = () => mutate(t => {
+    const s = getStage(t, sid); const path = k.split('.'); let o = s; while (path.length > 1) o = o[path.shift()]; o[path[0]] = v;
+    if (struct && s.generated) regenStage(t, s);
+    else if (struct && s.type === 'knockout') s.manualSlots = null;
+  });
+  if (struct && s0.generated && stageHasResults(t, s0)) ask('Changing this rebuilds the stage’s fixtures and deletes its results. Continue?', apply, () => render(), { label: 'Rebuild & continue' }); else apply();
+};
+CHG.tinfo = el => { const k = el.dataset.k; mutate(t => { if (k === 'targetTeams') t.targetTeams = parseInt(el.value) > 1 ? parseInt(el.value) : null; else t[k] = el.value; }); };
+
+const SRC_KINDS = {
+  league: [['rank', 'Table positions'], ['all', 'All teams']], swiss: [['rank', 'Table positions'], ['all', 'All teams']],
+  groups: [['groupPos', 'Top N of every group'], ['bestOfPos', 'Best N-th placed teams'], ['rank', 'Overall ranking positions']],
+  knockout: [['koWinners', 'Winners'], ['koLosers', 'Losers']]
+};
+function srcRow(t, s, j, src, i) {
+  const prev = t.stages.slice(0, i); const st = t.stages.find(x => x.id === src.stage) || prev[prev.length - 1];
+  const kinds = SRC_KINDS[st ? st.type : 'league'];
+  const num = (f, w, min = 1) => `<input type="number" min="${min}" data-chg="src" data-sid="${s.id}" data-j="${j}" data-f="${f}" value="${src[f] != null ? src[f] : ''}" style="width:${w || 64}px">`;
+  let p = '';
+  if (src.kind === 'rank') p = `from ${num('from')} to ${num('to')}`;
+  else if (src.kind === 'groupPos') p = `top ${num('perGroup')} per group`;
+  else if (src.kind === 'bestOfPos') p = `position ${num('pos')} · best ${num('count')}`;
+  return `<div class="srcrow"><span class="muted small">From</span><select data-chg="src" data-sid="${s.id}" data-j="${j}" data-f="stage">${prev.map(x => `<option value="${x.id}" ${x.id === src.stage ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>
+  <select data-chg="src" data-sid="${s.id}" data-j="${j}" data-f="kind">${kinds.map(([v, l]) => `<option value="${v}" ${src.kind === v ? 'selected' : ''}>${l}</option>`).join('')}</select>${p}<button class="btn sm icon danger" data-act="srcdel" data-sid="${s.id}" data-j="${j}">✕</button></div>`;
+}
+function defaultSource(t, i) {
+  const p = t.stages[i - 1]; if (!p) return null;
+  if (p.type === 'groups') return { stage: p.id, kind: 'groupPos', perGroup: 2 };
+  if (p.type === 'knockout') return { stage: p.id, kind: 'koWinners' };
+  return { stage: p.id, kind: 'rank', from: 1, to: 8 };
+}
+CHG.src = el => {
+  const sid = el.dataset.sid, j = +el.dataset.j, f = el.dataset.f; const t = cur(); const s0 = getStage(t, sid);
+  const apply = () => mutate(t => {
+    const s = getStage(t, sid); const src = s.sources[j];
+    if (f === 'stage') { src.stage = el.value; const st = getStage(t, el.value); const kinds = SRC_KINDS[st.type].map(x => x[0]); if (!kinds.includes(src.kind)) { Object.keys(src).forEach(k => { if (k !== 'stage') delete src[k]; }); setKind(src, kinds[0]); } }
+    else if (f === 'kind') { Object.keys(src).forEach(k => { if (k !== 'stage') delete src[k]; }); setKind(src, el.value); }
+    else src[f] = Math.max(1, parseInt(el.value) || 1);
+    if (s.generated) regenStage(t, s);
+  });
+  if (s0.generated && stageHasResults(t, s0)) ask('Changing qualification rebuilds this stage and deletes its results. Continue?', apply, () => render(), { label: 'Rebuild & continue' }); else apply();
+};
+function setKind(src, kind) { src.kind = kind; if (kind === 'rank') { src.from = 1; src.to = 8; } else if (kind === 'groupPos') src.perGroup = 2; else if (kind === 'bestOfPos') { src.pos = 3; src.count = 4; } }
+A.srcadd = el => mutate(t => { const i = t.stages.findIndex(s => s.id === el.dataset.sid); const s = t.stages[i]; const d = defaultSource(t, i); if (d) s.sources.push(d); });
+A.srcdel = el => mutate(t => { const s = getStage(t, el.dataset.sid); s.sources.splice(+el.dataset.j, 1); if (s.generated) regenStage(t, s); });
+
+CHG.zone = el => mutate(t => {
+  const s = getStage(t, el.dataset.sid); const z = s.zones[+el.dataset.j], f = el.dataset.f;
+  z[f] = (f === 'from' || f === 'to') ? Math.max(1, parseInt(el.value) || 1) : el.value;
+});
+A.zoneadd = el => mutate(t => { const s = getStage(t, el.dataset.sid); s.zones.push({ from: 1, to: 1, label: 'Zone', color: '#22c55e' }); });
+A.zonedel = el => mutate(t => getStage(t, el.dataset.sid).zones.splice(+el.dataset.j, 1));
+A.tbmove = el => mutate(t => { const s = getStage(t, el.dataset.sid); const j = +el.dataset.j, d = +el.dataset.d; const a = s.tiebreakers; if (j + d < 0 || j + d >= a.length) return; [a[j], a[j + d]] = [a[j + d], a[j]]; });
+A.tbdel = el => mutate(t => getStage(t, el.dataset.sid).tiebreakers.splice(+el.dataset.j, 1));
+CHG.tbadd = el => { if (!el.value) return; mutate(t => { const s = getStage(t, el.dataset.sid); if (!s.tiebreakers.includes(el.value)) s.tiebreakers.push(el.value); }); };
+
+const PAIRINGS = [['seeded', 'Seeded — best v worst, byes to top seeds, avoids same-group clashes'], ['random', 'Random draw'], ['cross-group', 'Cross-group — A1 v B2, B1 v A2… (2 per group)'], ['seededDraw', 'Seeded v unseeded draw (top half v bottom half)'], ['pairedDraw', 'Paired draw — seeds in pairs, e.g. 9/10 v 23/24'], ['manual', 'Manual — set pairings yourself']];
+
+function stageCard(t, s, i, counts, val, idx) {
+  const info = idx.info[s.id]; const n = counts[i]; const infos = val.filter(v => v.sid === s.id);
+  const errs = val.filter(v => v.lvl === 'error' && (!v.sid || v.sid === s.id));
+  const results = s.generated && stageHasResults(t, s);
+  const ko = s.type === 'knockout';
+  let h = `<div class="stage"><div class="sh"><span class="idx">${i + 1}</span><input class="name" type="text" data-chg="cfg" data-sid="${s.id}" data-k="name" data-t="str" value="${esc(s.name)}">
+    <div style="min-width:210px">${cfgSel(s, 'type', Object.entries(STAGE_TYPES), { struct: true })}</div>${statusChip(info)}<span class="chip">${isFinite(n) ? n : '?'} teams</span>${info.total ? `<span class="chip">${info.played}/${info.total} played</span>` : ''}<span class="spacer"></span>
+    <button class="btn sm icon" data-act="stup" data-sid="${s.id}" ${i === 0 ? 'disabled' : ''}>↑</button><button class="btn sm icon" data-act="stdn" data-sid="${s.id}" ${i === t.stages.length - 1 ? 'disabled' : ''}>↓</button><button class="btn sm icon danger" data-act="stdel" data-sid="${s.id}">✕</button></div><div class="sb">`;
+  /* generation row */
+  h += `<div class="row">`;
+  if (!s.generated) {
+    if (i === 0 || !s.sources.length) h += `<button class="btn primary" data-act="stgen" data-sid="${s.id}" ${errs.length ? 'disabled' : ''}>⚡ Generate fixtures</button>`;
+    else h += `<button class="btn" data-act="stgen" data-sid="${s.id}" ${info.status !== 'ready' ? 'disabled' : ''}>⚡ Generate now</button>`;
+    h += `<span class="muted small">${info.status === 'pending' ? '⏳ ' + esc(info.reason || '') : i > 0 && s.sources.length ? 'Generates automatically when qualifiers are known.' : errs.length ? 'Fix the issues above first.' : ''}</span>`;
+    if (i > 0) h += cfgChk(s, 'auto', 'Auto-generate when ready');
+  } else {
+    h += `<button class="btn" data-act="stredraw" data-sid="${s.id}">🎲 Redraw</button><button class="btn danger" data-act="streset" data-sid="${s.id}">Reset stage</button>`;
+    if (s.type === 'groups') h += `<button class="btn" data-act="stgroups" data-sid="${s.id}" ${results ? 'disabled title="Reset results first"' : ''}>✎ Edit groups</button>`;
+    if (ko) h += `<button class="btn" data-act="stpair" data-sid="${s.id}" ${results ? 'disabled title="Reset results first"' : ''}>✎ Edit first-round pairings</button>`;
+    if (s.genNote) h += `<span class="chip warn">⚠ ${esc(s.genNote)}</span>`;
+  }
+  h += `</div>`;
+  if (info.stale) h += `<div class="callout warn">⚠ <span>This stage was built from different teams/qualifiers than it now has, and it already has results. Use <b>Reset stage</b> to rebuild it.</span></div>`;
+  if (errs.length && !s.generated) errs.forEach(e => h += `<div class="callout error">⛔ <span>${esc(e.msg)}</span></div>`);
+  if (infos.some(v => v.lvl === 'warn')) infos.filter(v => v.lvl === 'warn').forEach(e => h += `<div class="callout warn">⚠ <span>${esc(e.msg)}</span></div>`);
+  /* qualification */
+  if (i > 0) {
+    h += `<div class="sec"><h4>Who enters this stage?</h4>${s.sources.map((src, j) => srcRow(t, s, j, src, i)).join('') || '<div class="muted small mb">No sources — all teams enter.</div>'}<button class="btn sm" data-act="srcadd" data-sid="${s.id}">＋ Add qualification rule</button><div class="hint">Combine rules freely, e.g. “top 2 of each group” + “best 8 third-placed”, or “league table 1–8” + “winners of the play-off stage”.</div></div>`;
+  }
+  /* structure */
+  h += `<div class="sec"><h4>Structure</h4><div class="fields w2">`;
+  if (s.type === 'league') h += fld('Legs (meetings per pair)', cfgIn(s, 'legs', { min: 1, max: 6, struct: true })) + cfgChk(s, 'shuffle', 'Randomise round order', { struct: true });
+  if (s.type === 'groups') h += fld('Number of groups', cfgIn(s, 'numGroups', { min: 1, max: 32, struct: true })) + fld('Legs per pair', cfgIn(s, 'legs', { min: 1, max: 6, struct: true })) +
+    fld('Group draw', cfgSel(s, 'groupSeeding', [['pots', 'Seeded pots (1 team per pot per group)'], ['random', 'Fully random'], ['sequential', 'By team order (A gets 1–4…)'], ['manual', 'Manual (keep my edits)']], { struct: true })) + cfgChk(s, 'shuffle', 'Randomise round order', { struct: true });
+  if (s.type === 'swiss') h += fld('Matches per team', cfgIn(s, 'matchesPerTeam', { min: 1, max: 40, struct: true })) + fld('Number of pots', cfgIn(s, 'numPots', { min: 1, max: 12, struct: true }));
+  if (ko) h += fld('Pairing method', cfgSel(s, 'pairing', PAIRINGS, { struct: true }), '') + fld('Rounds to play (0 = until a winner)', cfgIn(s, 'rounds', { min: 0, max: 8, struct: true })) +
+    fld('Legs per round', cfgSel(s, 'koLegs', [[1, 'Single match'], [2, 'Home & away']], { t: 'int', struct: true })) + fld('Legs in the final', cfgSel(s, 'finalLegs', [[1, 'Single match'], [2, 'Home & away']], { t: 'int', struct: true })) +
+    cfgChk(s, 'thirdPlace', 'Third-place play-off', { struct: true }) + cfgChk(s, 'awayGoals', 'Away goals rule (two legs)') + cfgChk(s, 'extraTime', 'Extra time allowed') + cfgChk(s, 'penalties', 'Penalty shoot-outs decide level ties') + cfgChk(s, 'higherSeedSecondLeg', 'Higher seed hosts 2nd leg') +
+    fld('Custom round names (comma separated)', cfgIn(s, 'roundNames', { type: 'text', t: 'str', ph: 'e.g. Round of 16, Quarter-finals, Semi-finals, Final' }), '');
+  h += `</div>`;
+  if (s.type === 'swiss') h += `<div class="hint">Each team gets ${s.matchesPerTeam} different opponents (${s.numPots > 1 ? 'equal numbers from each pot, ' : ''}half home, half away) — drawn automatically. Teams × matches must be even.</div>`;
+  h += `</div>`;
+  /* scoring */
+  if (!ko) {
+    h += `<div class="sec"><h4>Points & tie-breakers</h4><div class="fields"><label class="fld"><span>Win</span>${cfgIn(s, 'points.win', { min: 0, max: 9 })}</label><label class="fld"><span>Draw</span>${cfgIn(s, 'points.draw', { min: 0, max: 9 })}</label><label class="fld"><span>Loss</span>${cfgIn(s, 'points.loss', { min: 0, max: 9 })}</label>
+      ${cfgChk(s, 'drawPens', 'Draws go to penalties')}${s.drawPens ? `<label class="fld"><span>Pen win pts</span>${cfgIn(s, 'penPoints.win', { min: 0, max: 9 })}</label><label class="fld"><span>Pen loss pts</span>${cfgIn(s, 'penPoints.loss', { min: 0, max: 9 })}</label>` : ''}</div>
+      <div class="mt"><span class="muted small bold">Tie-breakers, in order (points are always first)</span></div><div class="mt">${s.tiebreakers.map((c, j) => `<div class="tbrow"><span class="muted">${j + 1}.</span><span>${esc(TB[c])}</span><button class="btn sm icon" data-act="tbmove" data-sid="${s.id}" data-j="${j}" data-d="-1">↑</button><button class="btn sm icon" data-act="tbmove" data-sid="${s.id}" data-j="${j}" data-d="1">↓</button><button class="btn sm icon danger" data-act="tbdel" data-sid="${s.id}" data-j="${j}">✕</button></div>`).join('')}</div>
+      <div class="mt" style="max-width:340px"><select data-chg="tbadd" data-sid="${s.id}"><option value="">＋ Add a tie-breaker…</option>${Object.entries(TB).filter(([k]) => !s.tiebreakers.includes(k)).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('')}</select></div></div>`;
+    h += `<div class="sec"><h4>Table highlights (${s.type === 'groups' ? 'by position in group' : 'by league position'})</h4>${s.zones.map((z, j) => `<div class="zrow"><span class="muted small">Positions</span><input type="number" min="1" data-chg="zone" data-sid="${s.id}" data-j="${j}" data-f="from" value="${z.from}"><span>–</span><input type="number" min="1" data-chg="zone" data-sid="${s.id}" data-j="${j}" data-f="to" value="${z.to}"><input type="text" data-chg="zone" data-sid="${s.id}" data-j="${j}" data-f="label" value="${esc(z.label)}"><input type="color" data-chg="zone" data-sid="${s.id}" data-j="${j}" data-f="color" value="${esc(z.color)}"><button class="btn sm icon danger" data-act="zonedel" data-sid="${s.id}" data-j="${j}">✕</button></div>`).join('')}<button class="btn sm" data-act="zoneadd" data-sid="${s.id}">＋ Add highlight</button><div class="hint">Optional colours for qualification, European places, relegation and so on. If you add none, qualification spots are highlighted automatically.</div></div>`;
+  }
+  /* schedule */
+  h += `<div class="sec"><h4>Schedule</h4><div class="fields"><label class="fld"><span>First match day</span>${cfgIn(s, 'startDate', { type: 'date', t: 'str' })}</label><label class="fld"><span>Days between rounds</span>${cfgIn(s, 'intervalDays', { min: 0, max: 120 })}</label><label class="fld"><span>Default kick-off</span>${cfgIn(s, 'kickoff', { type: 'time', t: 'str' })}</label>${s.generated ? `<div class="fld"><span>&nbsp;</span><button class="btn" data-act="stdates" data-sid="${s.id}">Apply dates to fixtures</button></div>` : ''}</div><div class="hint">Dates are optional. “Apply dates” overwrites the date and kick-off of every fixture in this stage (you can still edit single matches afterwards).</div></div>`;
+  if (!ko) h += `<div class="sec"><h4>Adjustments</h4><div class="row"><button class="btn sm" data-act="stadj" data-sid="${s.id}">± Point adjustments / deductions</button>${cfgChk(s, 'forceComplete', 'Treat this stage as finished using current standings (skip unplayed matches)')}</div></div>`;
+  return h + `</div></div>`;
+}
+V.format = t => {
+  const idx = IDX(t); const val = validate(t); const counts = planCounts(t);
+  const top = val.filter(v => !v.sid && v.lvl !== 'info');
+  let h = `<div class="card"><div class="card-h"><h2>Tournament details</h2><button class="btn sm" data-act="applypreset">Replace format with a preset…</button></div><div class="fields w2">
+    ${fld('Name', `<input type="text" data-chg="tinfo" data-k="name" value="${esc(t.name)}">`)}${fld('Season / edition', `<input type="text" data-chg="tinfo" data-k="season" value="${esc(t.season)}">`)}${fld('Organiser (optional)', `<input type="text" data-chg="tinfo" data-k="organizer" value="${esc(t.organizer)}">`)}
+    ${fld('Required number of teams', `<input type="number" min="2" max="128" data-chg="tinfo" data-k="targetTeams" value="${t.targetTeams || ''}" placeholder="No check">`)}</div>
+    <div class="hint">“Required number of teams” is a safety check: fixtures can’t be generated unless you have exactly that many teams. Leave it blank for any number.</div>${top.map(v => `<div class="callout ${v.lvl === 'error' ? 'error' : 'warn'} mt">${v.lvl === 'error' ? '⛔' : '⚠'} <span>${esc(v.msg)}</span></div>`).join('')}</div>`;
+  h += t.stages.map((s, i) => stageCard(t, s, i, counts, val, idx)).join('');
+  if (!t.stages.length) h += `<div class="card">${emptyBox('🧩', 'No stages yet', 'Chain stages together to build your format: for example Groups → Knockout, or League phase → Play-offs → Knockout.')}</div>`;
+  h += `<div class="card"><div class="card-h"><h3>Add a stage</h3></div><div class="row">${Object.entries(STAGE_TYPES).map(([k, l]) => `<button class="btn" data-act="stadd" data-type="${k}">＋ ${esc(l)}</button>`).join('')}</div></div>`;
+  const info = val.filter(v => v.lvl === 'info' && v.sid);
+  if (info.length) h += `<details class="card"><summary class="bold" style="cursor:pointer">Format summary</summary><div class="mt">${info.map(v => `<div class="muted small">• ${esc(v.msg)}</div>`).join('')}</div></details>`;
+  return h;
+};
+A.stadd = el => mutate(t => {
+  const type = el.dataset.type; const s = newStage(type); const i = t.stages.length; let k = 2, nm = s.name;
+  while (t.stages.some(x => x.name === nm)) nm = s.name + ' ' + k++;
+  s.name = nm; if (i > 0) { const d = defaultSource(t, i); if (d) { s.sources = [d]; if (type === 'knockout' && d.kind === 'groupPos') s.pairing = 'cross-group'; } }
+  t.stages.push(s);
+});
+A.stdel = el => { const t = cur(); const s = getStage(t, el.dataset.sid); ask('Delete stage “' + s.name + '” and all its fixtures and results?', () => mutate(t => { t.stages = t.stages.filter(x => x.id !== s.id); t.matches = t.matches.filter(m => m.stageId !== s.id); t.stages.forEach(x => x.sources = x.sources.filter(r => r.stage !== s.id)); }), null, { label: 'Delete stage' }); };
+function moveStage(sid, d) {
+  mutate(t => {
+    const i = t.stages.findIndex(s => s.id === sid), j = i + d; if (j < 0 || j >= t.stages.length) return;
+    [t.stages[i], t.stages[j]] = [t.stages[j], t.stages[i]];
+    t.stages.forEach((s, k) => { s.sources = s.sources.filter(r => t.stages.findIndex(x => x.id === r.stage) < k && t.stages.findIndex(x => x.id === r.stage) >= 0); });
+    t.stages.forEach(s => { if (s.generated) regenStage(t, s); });
+  });
+}
+A.stup = el => { const t = cur(); if (t.matches.some(m => m.hg != null)) ask('Reordering stages rebuilds fixtures and removes results. Continue?', () => moveStage(el.dataset.sid, -1), null, { label: 'Reorder' }); else moveStage(el.dataset.sid, -1); };
+A.stdn = el => { const t = cur(); if (t.matches.some(m => m.hg != null)) ask('Reordering stages rebuilds fixtures and removes results. Continue?', () => moveStage(el.dataset.sid, 1), null, { label: 'Reorder' }); else moveStage(el.dataset.sid, 1); };
+A.stgen = el => mutate(t => { const s = getStage(t, el.dataset.sid); if (!regenStage(t, s)) throw new Error('This stage isn’t ready yet — see the message on the stage.'); });
+A.stredraw = el => {
+  const t = cur(); const s = getStage(t, el.dataset.sid);
+  const go = () => mutate(t => { const s = getStage(t, el.dataset.sid); s.randSeed = Math.floor(Math.random() * 1e9); if (s.groupSeeding === 'manual') s.groupSeeding = 'pots'; if (s.pairing === 'manual') s.pairing = 'seeded'; regenStage(t, s); });
+  if (stageHasResults(t, s)) ask('Redrawing deletes this stage’s results. Continue?', go, null, { label: 'Redraw' }); else go();
+};
+A.streset = el => {
+  const t = cur(); const s = getStage(t, el.dataset.sid);
+  ask('Reset “' + s.name + '”? Its fixtures and results are deleted' + (t.stages.indexOf(s) === 0 ? ' — you can generate them again afterwards.' : '; it regenerates automatically when ready.'), () => mutate(t => { resetStage(t, getStage(t, el.dataset.sid)); }), null, { label: 'Reset' });
+};
+A.stdates = el => mutate(t => {
+  const s = getStage(t, el.dataset.sid);
+  const ms = t.matches.filter(m => m.stageId === s.id);
+  if (s.type === 'knockout') {
+    const R = koDims(s.entrantIds.length, s.rounds).Rfull; let base = 0; const baseOf = [];
+    for (let r = 0; r < Math.max(...s.ties.map(x => x.round)) + 1; r++) { baseOf[r] = base; base += legsForRound(s, r, R); }
+    s.ties.forEach(tie => tie.matchIds.forEach((id, l) => { const m = t.matches.find(x => x.id === id); m.date = s.startDate ? addDays(s.startDate, (baseOf[tie.round] + l) * (s.intervalDays | 0)) : ''; m.time = s.kickoff || ''; }));
+  } else ms.forEach(m => { m.date = dateFor(s, m.round); m.time = s.kickoff || ''; });
+  toast('Dates applied');
+});
+A.applypreset = () => { S.wz = { preset: 'wc32' }; openModal({ kind: 'preset' }); };
+A.presetpick = el => {
+  const P = PRESETS.find(x => x.id === el.dataset.id); const t = cur();
+  ask('Replace this tournament’s whole format with “' + P.name + '”? All fixtures and results will be deleted. Teams are kept.', () => {
+    A.closemodal();
+    mutate(t => { t.stages = P.build(); t.matches = []; t.preset = P.id; t.targetTeams = (P.strict && P.teams) ? P.teams : null; });
+  }, null, { label: 'Replace format' });
+};
+CHG.adj = el => { if (S.modal && S.modal.kind === 'adj') S.modal.vals[el.dataset.id] = parseInt(el.value) || 0; };
+A.stadj = el => { const t = cur(); const s = getStage(t, el.dataset.sid); openModal({ kind: 'adj', sid: s.id, vals: Object.assign({}, s.pointAdj) }); };
+A.adjsave = () => { const m = S.modal; A.closemodal(); mutate(t => { const s = getStage(t, m.sid); s.pointAdj = {}; Object.entries(m.vals).forEach(([k, v]) => { if (v) s.pointAdj[k] = v; }); }); };
+/* manual group editor */
+A.stgroups = el => { const t = cur(); const s = getStage(t, el.dataset.sid); const map = {}; s.groups.forEach(g => g.teamIds.forEach(id => map[id] = g.name)); openModal({ kind: 'groups', sid: s.id, map }); };
+CHG.grpmap = el => { S.modal.map[el.dataset.id] = el.value; renderModal(); };
+A.grpsave = () => {
+  const m = S.modal; const t = cur(); const s = getStage(t, m.sid);
+  const groups = s.groups.map(g => ({ name: g.name, teamIds: s.entrantIds.filter(id => m.map[id] === g.name) }));
+  if (groups.some(g => g.teamIds.length < 2)) return toast('Every group needs at least 2 teams.', true);
+  A.closemodal();
+  mutate(t => { const s = getStage(t, m.sid); s.groups = groups; s.groupSeeding = 'manual'; regenStage(t, s); });
+};
+/* manual pairing editor */
+A.stpair = el => {
+  const t = cur(); const s = getStage(t, el.dataset.sid);
+  const slots = s.ties.filter(x => x.round === 0).map(x => [x.a || '', x.b || '']);
+  openModal({ kind: 'pair', sid: s.id, slots });
+};
+CHG.pair = el => { S.modal.slots[+el.dataset.j][+el.dataset.k] = el.value; renderModal(); };
+A.pairsave = () => {
+  const m = S.modal; const t = cur(); const s = getStage(t, m.sid);
+  const used = m.slots.flat().filter(Boolean);
+  if (new Set(used).size !== used.length) return toast('A team is used twice.', true);
+  if (!sameSet(used, s.entrantIds)) return toast('Every team must be placed exactly once.', true);
+  if (m.slots.some(p => !p[0] && !p[1])) return toast('A slot can’t be empty on both sides.', true);
+  A.closemodal();
+  mutate(t => { const s = getStage(t, m.sid); s.manualSlots = m.slots.map(p => p.slice()); s.pairing = 'manual'; regenStage(t, s); });
+};
+
+/* =====================================================================
+   VIEWS (2/2): Fixtures, Tables, Bracket, Stats, Data, Modals
+   ===================================================================== */
+function download(name, text, type) {
+  const b = new Blob([text], { type: type || 'application/json' }); const a = document.createElement('a');
+  a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 600);
+}
+const slug = s => String(s || 'tournament').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'tournament';
+const csvEsc = v => { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+
+/* ---------------- FIXTURES ---------------- */
+function curRound(t, s) {
+  const ms = t.matches.filter(m => m.stageId === s.id); if (!ms.length) return 0;
+  const open = ms.filter(m => m.home && m.away && !isPlayed(m)); if (open.length) return Math.min(...open.map(m => m.round));
+  return Math.max(...ms.map(m => m.round));
+}
+function matchRow(t, m) {
+  const idx = IDX(t); const s = stageById(t, m.stageId); let hl = '', al = '', tie = null, res = null;
+  if (m.tieId && s) { tie = s.ties.find(x => x.id === m.tieId); if (tie) { const [hs, as] = matchSlots(s, tie, m); hl = srcLabel(t, s, tie, hs); al = srcLabel(t, s, tie, as); res = idx.tieRes.get(tie.id); } }
+  const known = m.home && m.away, played = isPlayed(m);
+  const tags = [];
+  if (m.group) tags.push(`<span class="tag">${esc(m.group)}</span>`);
+  if (tie && tie.matchIds.length > 1) tags.push(`<span class="tag">Leg ${m.leg}/${tie.matchIds.length}</span>`);
+  if (tie && res && m.id === tie.matchIds[tie.matchIds.length - 1] && tie.matchIds.length > 1 && res.played === res.total) { const hA = m.home === res.a ? res.ga : res.gb, aA = m.home === res.a ? res.gb : res.ga; tags.push(`<span class="tag gold">Agg ${hA}–${aA}</span>`); }
+  if (m.aet) tags.push('<span class="tag">AET</span>');
+  if (hasPen(m)) tags.push(`<span class="tag gold">Pens ${m.pen.h}–${m.pen.a}</span>`);
+  if (res && res.state === 'level' && m.id === tie.matchIds[tie.matchIds.length - 1]) tags.push('<span class="tag warn">⚠ level — enter penalties</span>');
+  if (played && m.events.length) { const g = eventGoals(m); if (g.h !== m.hg || g.a !== m.ag) tags.push(`<span class="tag warn" title="Goals listed: ${g.h}–${g.a}">⚠ scorers don’t add up</span>`); }
+  if (m.venue) tags.push(`<span class="tag">📍 ${esc(m.venue)}</span>`);
+  const ids = tie ? tie.matchIds.join(',') : m.id;
+  return `<div class="match ${played ? 'played' : ''}" data-mid="${m.id}">
+    <div class="dt">${m.date ? '<b>' + fmtDate(m.date) + '</b>' : '<span class="muted tiny">Date TBA</span>'}${m.time ? '<br>' + esc(m.time) : ''}</div>
+    <div class="h">${tmCell(t, m.home, hl, true)}</div>
+    <div class="mid">${known ? `<input class="sc" type="number" min="0" inputmode="numeric" data-chg="score" value="${m.hg == null ? '' : m.hg}"><span class="dash">–</span><input class="sc" type="number" min="0" inputmode="numeric" data-chg="score" value="${m.ag == null ? '' : m.ag}">` : '<span class="muted">v</span>'}</div>
+    <div class="a">${tmCell(t, m.away, al)}</div>
+    <div class="acts">${known ? `<button class="btn sm" data-act="mm" data-ids="${ids}" title="Scorers, cards, penalties, date, venue">Details</button>` : ''}</div>
+    ${tags.length ? `<div class="mtags">${tags.join('')}</div>` : ''}</div>`;
+}
+V.fixtures = t => {
+  const idx = IDX(t); const F = S.fx; const gen = t.stages.filter(s => s.generated);
+  if (!gen.length) return `<div class="card">${emptyBox('📅', 'No fixtures yet', t.teams.length < 2 ? 'Add teams first.' : 'Generate your first stage from the Format tab.')}<div class="row" style="justify-content:center"><button class="btn primary" data-act="tab" data-tab="${t.teams.length < 2 ? 'teams' : 'format'}">${t.teams.length < 2 ? 'Go to Teams' : 'Go to Format'}</button></div></div>`;
+  if (F.stage !== 'all' && !gen.some(s => s.id === F.stage)) { F.stage = 'all'; F.group = 'all'; F.round = 'cur'; }
+  const sel = F.stage === 'all' ? null : stageById(t, F.stage);
+  let roundOpts = '';
+  if (sel) {
+    if (sel.type === 'knockout') roundOpts = koRoundList(sel).map(r => `<option value="${r.r}" ${String(F.round) === String(r.r) ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
+    else { const rs = [...new Set(t.matches.filter(m => m.stageId === sel.id).map(m => m.round))].sort((a, b) => a - b); roundOpts = rs.map(r => `<option value="${r}" ${String(F.round) === String(r) ? 'selected' : ''}>Matchday ${r + 1}</option>`).join(''); }
+  }
+  let h = `<div class="card"><div class="filters">
+    <label class="fld"><span>Stage</span><select data-chg="fx" data-k="stage"><option value="all">All stages</option>${gen.map(s => `<option value="${s.id}" ${F.stage === s.id ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>
+    ${sel && sel.type === 'groups' ? `<label class="fld"><span>Group</span><select data-chg="fx" data-k="group"><option value="all">All groups</option>${sel.groups.map(g => `<option ${F.group === g.name ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>` : ''}
+    <label class="fld"><span>Round</span><select data-chg="fx" data-k="round"><option value="cur" ${F.round === 'cur' ? 'selected' : ''}>Current round</option><option value="all" ${F.round === 'all' ? 'selected' : ''}>All rounds</option>${roundOpts}</select></label>
+    <label class="fld"><span>Team</span><select data-chg="fx" data-k="team"><option value="all">All teams</option>${t.teams.map(x => `<option value="${x.id}" ${F.team === x.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
+    <label class="fld"><span>Status</span><select data-chg="fx" data-k="status">${[['all', 'All'], ['played', 'Played'], ['upcoming', 'To play']].map(([v, l]) => `<option value="${v}" ${F.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label class="fld"><span>Search</span><input type="text" data-chg="fx" data-k="q" value="${esc(F.q)}" placeholder="Team name…"></label></div>
+    <div class="hint">Type the two scores and press Enter or Tab to save — tables, brackets and next-round fixtures update instantly. Use <b>Details</b> for scorers, assists, cards, extra time, penalties, date and venue.</div></div>`;
+  const q = F.q.trim().toLowerCase(); let any = false;
+  for (const s of t.stages) {
+    if (!s.generated || (F.stage !== 'all' && F.stage !== s.id)) continue;
+    let ms = t.matches.filter(m => m.stageId === s.id);
+    if (F.group !== 'all' && s.type === 'groups') ms = ms.filter(m => m.group === F.group);
+    if (F.team !== 'all') ms = ms.filter(m => m.home === F.team || m.away === F.team);
+    if (F.status === 'played') ms = ms.filter(isPlayed); if (F.status === 'upcoming') ms = ms.filter(m => !isPlayed(m));
+    if (q) ms = ms.filter(m => teamName(t, m.home).toLowerCase().includes(q) || teamName(t, m.away).toLowerCase().includes(q));
+    const rsel = F.round === 'cur' ? curRound(t, s) : F.round;
+    if (F.round !== 'all' && F.stage === 'all' && F.round !== 'cur') { /* specific round only meaningful with one stage */ }
+    else if (F.round !== 'all') ms = ms.filter(m => m.round === +rsel);
+    if (!ms.length) continue; any = true;
+    const keyOf = m => { const tie = m.tieId ? s.ties.find(x => x.id === m.tieId) : null; return m.round * 2 + (tie && tie.third ? 1 : 0); };
+    const keys = [...new Set(ms.map(keyOf))].sort((a, b) => a - b);
+    h += `<div class="card flat"><div class="card-h" style="padding:12px 14px;margin:0"><h3>${esc(s.name)}</h3><span class="chip">${esc(STAGE_TYPES[s.type].split(' (')[0])}</span></div>`;
+    for (const k of keys) {
+      const rm = ms.filter(m => keyOf(m) === k).sort((a, b) => ((a.date || '9') < (b.date || '9') ? -1 : (a.date || '9') > (b.date || '9') ? 1 : 0) || ((a.time || '') < (b.time || '') ? -1 : 1));
+      const title = (s.type === 'knockout' && k % 2) ? 'Third place play-off' : roundTitle(t, s, rm[0]);
+      const done = rm.filter(isPlayed).length;
+      h += `<div class="rnd">${esc(title)}<span class="tiny">${done}/${rm.length} played</span></div>` + rm.map(m => matchRow(t, m)).join('');
+    }
+    h += `</div>`;
+  }
+  if (!any) h += `<div class="card">${emptyBox('🔍', 'No matches match these filters', 'Try “All rounds” or clear the search.')}</div>`;
+  const pend = t.stages.filter(s => !s.generated);
+  pend.forEach(s => { const info = idx.info[s.id]; h += `<div class="callout info">⏳ <span><b>${esc(s.name)}</b> — ${info.status === 'ready' ? 'ready to generate (see Format).' : esc(info.reason || 'waiting for earlier stages')}</span></div>`; });
+  return h;
+};
+CHG.fx = el => { S.fx[el.dataset.k] = el.value; if (el.dataset.k === 'stage') { S.fx.group = 'all'; S.fx.round = 'cur'; } render(); };
+function isLastLegOfTwo(t, m) { if (!m.tieId) return false; const s = stageById(t, m.stageId), tie = s.ties.find(x => x.id === m.tieId); return !!tie && tie.matchIds.length > 1 && tie.matchIds[tie.matchIds.length - 1] === m.id; }
+CHG.score = el => {
+  const row = el.closest('[data-mid]'); const id = row.dataset.mid; const ins = row.querySelectorAll('input.sc');
+  const a = ins[0].value.trim(), b = ins[1].value.trim();
+  if (a === '' && b === '') { const m = IDX(cur()).m.get(id); if (m.hg == null) return; mutate(t => clearResult(t.matches.find(x => x.id === id))); toast('Result cleared — Undo is available'); return; }
+  if (a === '' || b === '') return;
+  const hg = Math.max(0, parseInt(a) || 0), ag = Math.max(0, parseInt(b) || 0);
+  mutate(t => { const m = t.matches.find(x => x.id === id); m.hg = hg; m.ag = ag; if (hg !== ag && !isLastLegOfTwo(t, m)) m.pen = null; });
+  const t = cur(), m = IDX(t).m.get(id);
+  if (m && m.tieId) { const s = stageById(t, m.stageId), tie = s.ties.find(x => x.id === m.tieId), r = IDX(t).tieRes.get(tie.id); if (r && r.state === 'level') { toast('Tie is level — enter the shoot-out result.'); openMM(tie.matchIds); } }
+};
+
+/* ---------------- TABLES ---------------- */
+const ZCYCLE = ['#22c55e', '#3b82f6', '#14b8a6', '#a855f7', '#f59e0b'];
+function autoZones(t, s) {
+  const z = []; let c = 0;
+  t.stages.forEach(s2 => (s2.sources || []).forEach(src => {
+    if (src.stage !== s.id) return; const col = ZCYCLE[c++ % ZCYCLE.length];
+    if (src.kind === 'groupPos') z.push({ from: 1, to: src.perGroup || 1, label: '→ ' + s2.name, color: col });
+    else if (src.kind === 'bestOfPos') z.push({ from: src.pos || 3, to: src.pos || 3, label: 'Best ' + ord(src.pos || 3) + '-placed may qualify → ' + s2.name, color: '#f59e0b' });
+    else if (src.kind === 'rank') z.push({ from: src.from || 1, to: src.to || 99, label: '→ ' + s2.name, color: col });
+  }));
+  return z;
+}
+function tableHtml(t, s, rows, o = {}) {
+  const zones = o.zones || (s.zones.length ? s.zones : autoZones(t, s));
+  const zf = pos => zones.find(z => pos >= z.from && pos <= z.to);
+  const ext = S.tb.ext;
+  let h = `<div class="tw"><table class="tbl"><thead><tr><th>#</th><th class="l">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th>${o.group && !ext ? '' : '<th>Form</th>'}${ext ? '<th>AwGF</th><th>CS</th><th>YC</th><th>RC</th><th>FP</th>' : ''}</tr></thead><tbody>`;
+  rows.forEach((r, i) => {
+    const pos = o.posKey ? r[o.posKey] : (i + 1); const z = o.flag ? null : zf(r.pos || pos);
+    const dim = o.cut != null && i >= o.cut;
+    const bc = o.cut != null ? (i < o.cut ? '#22c55e' : 'transparent') : (z ? z.color : 'transparent');
+    h += `<tr style="${dim ? 'opacity:.55' : ''}"><td class="pos" style="border-left-color:${bc}">${o.group ? r.pos : (r.pos || pos)}</td><td class="l">${tmCell(t, r.teamId)}${r.adj ? `<span class="tag warn" title="Point adjustment">${r.adj > 0 ? '+' : ''}${r.adj}</span>` : ''}${o.showGroup ? ` <span class="tag">${esc(r.group.replace('Group ', ''))}</span>` : ''}</td>
+      <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="pts">${r.pts}</td>
+      ${o.group && !ext ? '' : `<td><span class="form">${r.form.slice(-5).map(f => `<i class="${f}">${f}</i>`).join('')}</span></td>`}${ext ? `<td>${r.awayGf}</td><td>${r.cs}</td><td>${r.yc}</td><td>${r.rc}</td><td>${r.fp}</td>` : ''}</tr>`;
+  });
+  h += `</tbody></table></div>`;
+  if (!o.noLegend && zones.length && !o.flag) h += `<div class="zones">${zones.map(z => `<span><i style="background:${esc(z.color)}"></i>${esc(z.label)}</span>`).join('')}</div>`;
+  return h;
+}
+V.tables = t => {
+  const idx = IDX(t); const rr = t.stages.filter(s => s.type !== 'knockout');
+  if (!rr.length) return `<div class="card">${emptyBox('📊', 'No table-based stage', 'This format is a pure knockout — open the Bracket tab.')}</div>`;
+  let sid = S.tb.stage; if (!rr.some(s => s.id === sid)) sid = (rr.find(s => idx.info[s.id].status === 'active') || rr.find(s => s.generated) || rr[0]).id; S.tb.stage = sid;
+  const s = getStage(t, sid); const info = idx.info[s.id];
+  let h = `<div class="card"><div class="row">${rr.length > 1 ? rr.map(x => `<button class="btn ${x.id === sid ? 'primary' : ''}" data-act="tbstage" data-sid="${x.id}">${esc(x.name)}</button>`).join('') : `<h2>${esc(s.name)}</h2>`}<span class="spacer"></span>${statusChip(info)}<label class="row small" style="gap:6px"><input type="checkbox" data-chg="tbext" ${S.tb.ext ? 'checked' : ''}> More columns</label></div></div>`;
+  if (!s.generated) return h + `<div class="card">${emptyBox('⏳', 'Not generated yet', esc(info.reason || 'Generate this stage from the Format tab.'))}</div>`;
+  const res = info.result;
+  if (s.type === 'groups') {
+    h += `<div class="grid g2">` + res.groupOrder.map(g => `<div class="card flat"><div class="rnd">${esc(g)}</div><div style="padding:6px 8px">${tableHtml(t, s, res.tables[g], { group: true })}</div></div>`).join('') + `</div>`;
+    t.stages.forEach(s2 => (s2.sources || []).forEach(src => {
+      if (src.stage !== s.id || src.kind !== 'bestOfPos') return;
+      const rows = res.groupOrder.map(g => res.tables[g][(src.pos || 3) - 1]).filter(Boolean).sort(crossCmp(id => IDX(t).seed.get(id) ?? 9999));
+      h += `<div class="card flat"><div class="rnd">Ranking of ${ord(src.pos || 3)}-placed teams — best ${src.count} qualify</div><div style="padding:6px 8px">${tableHtml(t, s, rows, { cut: src.count, showGroup: true, noLegend: true, posKey: '_', flag: true })}</div></div>`;
+    }));
+  } else h += `<div class="card flat"><div style="padding:6px 8px">${tableHtml(t, s, res.table)}</div></div>`;
+  h += `<div class="hint">Ranked by points, then: ${s.tiebreakers.map(c => TB[c]).join(' → ') || 'team order'}.</div>`;
+  return h;
+};
+A.tbstage = el => { S.tb.stage = el.dataset.sid; render(); };
+CHG.tbext = el => { S.tb.ext = el.checked; render(); };
+
+/* ---------------- BRACKET ---------------- */
+function tieCard(t, s, tie) {
+  const idx = IDX(t); const res = idx.tieRes.get(tie.id) || {}; const legs = tie.matchIds.map(id => idx.m.get(id));
+  const side = (team, key) => {
+    const lbl = team ? null : srcLabel(t, s, tie, key); let lg = '', tot = '';
+    if (team && !tie.bye) { legs.forEach(m => { if (isPlayed(m)) lg += `<span>${m.home === team ? m.hg : m.ag}</span>`; }); if (res.played) tot = key === 'a' ? res.ga : res.gb; }
+    const win = res.done && team && res.winner === team && !tie.bye, lose = res.done && team && res.winner !== team && !tie.bye;
+    return `<div class="side ${win ? 'w' : ''} ${lose ? 'l' : ''}">${tmCell(t, team, lbl)}${legs.length > 1 ? `<span class="lg">${lg}</span>` : ''}<span class="tot">${tot}</span></div>`;
+  };
+  let foot = '';
+  if (tie.bye) foot = 'Bye — advances automatically';
+  else if (res.state === 'done') {
+    const last = legs[legs.length - 1]; const bits = [];
+    if (res.how === 'pens' && hasPen(last)) bits.push(`Pens ${last.home === res.a ? last.pen.h : last.pen.a}–${last.home === res.a ? last.pen.a : last.pen.h}`);
+    if (res.how === 'away') bits.push('Away goals'); if (res.how === 'override') bits.push('Decided manually'); if (last && last.aet) bits.push('AET');
+    foot = bits.join(' · ');
+  } else if (res.state === 'level') foot = '⚠ Level — enter penalties';
+  else { const nx = legs.find(m => m && !isPlayed(m) && m.date); if (nx) foot = fmtDate(nx.date); }
+  return `<div class="tie ${res.state === 'tbd' ? 'tbd' : ''}" data-act="tie" data-sid="${s.id}" data-tid="${tie.id}">${side(tie.a, 'a')}${side(tie.b, 'b')}${foot ? `<div class="foot">${foot}</div>` : ''}</div>`;
+}
+V.bracket = t => {
+  const idx = IDX(t); const kos = t.stages.filter(s => s.type === 'knockout');
+  if (!kos.length) return `<div class="card">${emptyBox('🏆', 'No knockout stage', 'Add a Knockout stage in the Format tab to get a bracket.')}</div>`;
+  let sid = S.bk.stage; if (!kos.some(s => s.id === sid)) sid = (kos.find(s => idx.info[s.id].status === 'active') || kos.find(s => s.generated && idx.info[s.id].status !== 'complete') || kos.find(s => s.generated) || kos[0]).id; S.bk.stage = sid;
+  const s = getStage(t, sid); const info = idx.info[s.id];
+  let h = `<div class="card"><div class="row">${kos.length > 1 ? kos.map(x => `<button class="btn ${x.id === sid ? 'primary' : ''}" data-act="bkstage" data-sid="${x.id}">${esc(x.name)}</button>`).join('') : `<h2>${esc(s.name)}</h2>`}<span class="spacer"></span>${statusChip(info)}
+    ${s.generated && !stageHasResults(t, s) ? `<button class="btn sm" data-act="stpair" data-sid="${s.id}">✎ Edit pairings</button><button class="btn sm" data-act="stredraw" data-sid="${s.id}">🎲 Redraw</button>` : ''}</div></div>`;
+  if (!s.generated) return h + `<div class="card">${emptyBox('⏳', 'Bracket not ready', esc(info.reason || (info.status === 'ready' ? 'Press “Generate” in the Format tab.' : 'Waiting for earlier stages.')))}</div>`;
+  if (info.stale) h += `<div class="callout warn">⚠ <span>This bracket was built from earlier qualifiers that have since changed. Reset the stage in Format to rebuild it.</span></div>`;
+  const rounds = koRoundList(s); const R = rounds.length;
+  h += `<div class="card"><div class="bwrap"><div class="bracket">` + rounds.map((rd, r) => {
+    return `<div class="bcol ${r === 0 ? 'first' : ''} ${r === R - 1 ? 'last' : ''}"><h4>${esc(rd.name)}</h4><div class="bslots">` + rd.ties.map((tie, k) => `<div class="slot ${r < R - 1 ? 'nx ' + (k % 2 ? 'dn' : 'up') : ''} ${r > 0 ? 'pv' : ''}">${tieCard(t, s, tie)}</div>`).join('') + `</div></div>`;
+  }).join('') + `</div></div>`;
+  const th = s.ties.find(x => x.third);
+  if (th) h += `<div style="max-width:300px;margin:6px 0 0"><div class="muted small bold mb">THIRD PLACE PLAY-OFF</div>${tieCard(t, s, th)}</div>`;
+  const rs = info.result; if (rs && rs.champion) h += `<div class="champ mt"><div class="trophy">🏆</div><div><div class="muted small bold">WINNER</div><h2>${esc(teamName(t, rs.champion))}</h2></div></div>`;
+  return h + `</div>`;
+};
+A.bkstage = el => { S.bk.stage = el.dataset.sid; render(); };
+A.tie = el => {
+  const t = cur(); const s = getStage(t, el.dataset.sid); const tie = s.ties.find(x => x.id === el.dataset.tid);
+  if (tie.bye) return toast('Bye — this team goes through automatically.');
+  if (!tie.a || !tie.b) return toast('Waiting for the earlier rounds to finish.');
+  openMM(tie.matchIds);
+};
+
+/* ---------------- STATS ---------------- */
+V.stats = t => {
+  const idx = IDX(t); const played = t.matches.filter(isPlayed);
+  if (!played.length) return `<div class="card">${emptyBox('📈', 'No statistics yet', 'Enter some results — scorers, cards and records show up here automatically.')}</div>`;
+  const F = S.ss; if (F.stage !== 'all' && !getStage(t, F.stage)) F.stage = 'all';
+  const pred = F.stage === 'all' ? null : (m => m.stageId === F.stage);
+  const ms = played.filter(m => !pred || pred(m));
+  const ps = playerStats(t, pred);
+  const scorers = ps.filter(p => p.goals > 0).sort((a, b) => b.goals - a.goals || a.pens - b.pens || b.assists - a.assists || a.player.localeCompare(b.player));
+  const assists = ps.filter(p => p.assists > 0).sort((a, b) => b.assists - a.assists || b.goals - a.goals);
+  const cards = ps.filter(p => p.yc || p.rc).sort((a, b) => (b.rc * 3 + b.yc) - (a.rc * 3 + a.yc));
+  const sub = { points: { win: 3, draw: 1, loss: 0 }, penPoints: { win: 2, loss: 1 }, drawPens: false, pointAdj: {} };
+  const rows = tableFor(sub, t.teams.map(x => x.id), ms).filter(r => r.p > 0);
+  const goals = ms.reduce((a, m) => a + m.hg + m.ag, 0); const hw = ms.filter(m => m.hg > m.ag).length, aw = ms.filter(m => m.hg < m.ag).length, dr = ms.length - hw - aw;
+  const margin = m => Math.abs(m.hg - m.ag);
+  const big = ms.slice().sort((a, b) => margin(b) - margin(a) || (b.hg + b.ag) - (a.hg + a.ag)).slice(0, 3);
+  const high = ms.slice().sort((a, b) => (b.hg + b.ag) - (a.hg + a.ag)).slice(0, 3);
+  const pens = ms.filter(hasPen).length;
+  const evs = ms.flatMap(m => m.events || []);
+  const stat = (lbl, v) => `<div class="kpi"><b>${v}</b><span>${lbl}</span></div>`;
+  const mrow = m => `<div class="mini"><span class="tm" style="flex:1;justify-content:flex-end">${tmCell(t, m.home, '', true)}</span><span class="sc">${m.hg} – ${m.ag}</span><span class="tm" style="flex:1">${tmCell(t, m.away)}</span></div>`;
+  let h = `<div class="card"><div class="row"><h2 style="flex:1">Statistics</h2><label class="fld" style="min-width:200px"><span>Scope</span><select data-chg="ssstage"><option value="all">Whole tournament</option>${t.stages.filter(s => s.generated).map(s => `<option value="${s.id}" ${F.stage === s.id ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label></div></div>`;
+  h += `<div class="grid g4 mb">${stat('Matches played', ms.length)}${stat('Goals', goals)}${stat('Goals per match', (goals / ms.length).toFixed(2))}${stat('Home / Draw / Away', hw + ' / ' + dr + ' / ' + aw)}${stat('Penalty shoot-outs', pens)}${stat('Yellow cards', evs.filter(e => e.type === 'yc').length)}${stat('Red cards', evs.filter(e => e.type === 'rc' || e.type === 'y2').length)}${stat('Own goals', evs.filter(e => e.type === 'og').length)}</div>`;
+  const ptable = (title, list, col, key) => `<div class="card flat"><div class="rnd">${title}</div>${list.length ? `<div class="tw"><table class="tbl"><thead><tr><th>#</th><th class="l">Player</th><th class="l">Team</th>${col}</tr></thead><tbody>${list.slice(0, 15).map((p, i) => `<tr><td class="pos">${i + 1}</td><td class="l bold">${esc(p.player)}</td><td class="l">${tmCell(t, p.team)}</td>${key(p)}</tr>`).join('')}</tbody></table></div>` : '<div class="empty">Nothing recorded yet — add scorers in a match’s Details.</div>'}</div>`;
+  h += `<div class="grid g2">${ptable('⚽ Top scorers', scorers, '<th>Goals</th><th>Pens</th><th>Assists</th>', p => `<td class="pts">${p.goals}</td><td>${p.pens}</td><td>${p.assists}</td>`)}${ptable('🎯 Top assists', assists, '<th>Assists</th><th>Goals</th>', p => `<td class="pts">${p.assists}</td><td>${p.goals}</td>`)}</div>`;
+  h += `<div class="grid g2">${ptable('🟨 Discipline', cards, '<th>🟨</th><th>🟥</th>', p => `<td>${p.yc}</td><td>${p.rc}</td>`)}<div class="card flat"><div class="rnd">Records</div><div style="padding:8px 14px"><div class="muted small bold">Biggest wins</div>${big.map(mrow).join('')}<div class="muted small bold mt">Highest-scoring matches</div>${high.map(mrow).join('')}</div></div></div>`;
+  const byGF = rows.slice().sort((a, b) => b.gf - a.gf || a.ga - b.ga);
+  h += `<div class="card flat"><div class="rnd">Team statistics</div><div class="tw"><table class="tbl"><thead><tr><th class="l">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Goals / match</th><th>Clean sheets</th><th>Away goals</th><th>🟨</th><th>🟥</th></tr></thead><tbody>${byGF.map(r => `<tr><td class="l">${tmCell(t, r.teamId)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td class="pts">${r.gf}</td><td>${r.ga}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td>${(r.gf / r.p).toFixed(2)}</td><td>${r.cs}</td><td>${r.awayGf}</td><td>${r.yc}</td><td>${r.rc}</td></tr>`).join('')}</tbody></table></div></div>`;
+  return h;
+};
+CHG.ssstage = el => { S.ss.stage = el.value; render(); };
+
+/* ---------------- DATA ---------------- */
+V.data = t => {
+  const played = t.matches.filter(isPlayed).length;
+  return `<div class="grid g2"><div class="card"><h2 class="mb">Export & import</h2><div class="row mb"><button class="btn primary" data-act="exjson">Export this tournament (JSON)</button><button class="btn" data-act="exall">Export everything</button><button class="btn" data-act="import">Import JSON</button></div>
+    <div class="row"><button class="btn" data-act="excsv">Fixtures & results (CSV)</button><button class="btn" data-act="exstand">Standings (CSV)</button><button class="btn" data-act="exscorers">Scorers (CSV)</button><button class="btn" data-act="print">🖨 Print this page</button></div>
+    <div class="hint mt">Your data lives in this browser’s storage. Export a JSON backup now and then — it also lets you move a tournament to another device.</div></div>
+    <div class="card"><h2 class="mb">Maintenance</h2><div class="row"><button class="btn" data-act="clearres" ${played ? '' : 'disabled'}>Clear all results (keep fixtures)</button><button class="btn danger" data-act="clearfix" ${t.matches.length ? '' : 'disabled'}>Delete all fixtures</button><button class="btn" data-act="dup" data-id="${t.id}">Duplicate tournament</button><button class="btn danger" data-act="del" data-id="${t.id}">Delete tournament</button></div></div></div>
+    <div class="card"><h2 class="mb">How it fits together</h2><div class="muted" style="line-height:1.6">
+    <p>A tournament is a chain of <b>stages</b>. Each stage is a <b>league</b>, a set of <b>groups</b>, a single <b>league phase</b> (every team plays N different opponents, like the new Champions League) or a <b>knockout</b>. Later stages list <b>qualification rules</b> (“top 2 of each group”, “table positions 9–24”, “best 8 third-placed”, “winners of the play-off stage”).</p>
+    <p>As soon as the stage before has finished, the next one builds itself — pairings, byes, legs and all. Edit an earlier result and anything that depends on it recalculates; if a later fixture’s teams change, its stale result is cleared for you.</p>
+    <p>Tie-breakers, points per win/draw/loss, number of legs, away goals, extra time, penalties, third-place play-offs, seeded pots, draw styles, point deductions and table colours are all editable in <b>Format</b>. Presets are only starting points.</p></div></div>`;
+};
+A.exjson = () => { const t = cur(); download(slug(t.name) + '.json', JSON.stringify(t, null, 1)); };
+A.exall = () => download('matchday-all-tournaments.json', JSON.stringify({ v: 1, tournaments: S.db.tournaments }, null, 1));
+A.excsv = () => {
+  const t = cur(); const rows = [['Stage', 'Group', 'Round', 'Leg', 'Date', 'Time', 'Home', 'Away', 'Home goals', 'Away goals', 'AET', 'Pens home', 'Pens away', 'Venue']];
+  t.matches.forEach(m => { const s = stageById(t, m.stageId); rows.push([s.name, m.group || '', roundTitle(t, s, m), m.tieId ? m.leg : '', m.date, m.time, teamName(t, m.home), teamName(t, m.away), m.hg, m.ag, m.aet ? 'yes' : '', m.pen ? m.pen.h : '', m.pen ? m.pen.a : '', m.venue]); });
+  download(slug(t.name) + '-fixtures.csv', rows.map(r => r.map(csvEsc).join(',')).join('\n'), 'text/csv');
+};
+A.exstand = () => {
+  const t = cur(); const idx = IDX(t); const rows = [['Stage', 'Group', 'Pos', 'Team', 'P', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'Pts']];
+  t.stages.forEach(s => { const r = idx.info[s.id].result; if (!r || s.type === 'knockout') return; const lists = s.type === 'groups' ? r.groupOrder.map(g => [g, r.tables[g]]) : [['', r.table]]; lists.forEach(([g, tb]) => tb.forEach(x => rows.push([s.name, g, x.pos, teamName(t, x.teamId), x.p, x.w, x.d, x.l, x.gf, x.ga, x.gd, x.pts]))); });
+  download(slug(t.name) + '-standings.csv', rows.map(r => r.map(csvEsc).join(',')).join('\n'), 'text/csv');
+};
+A.exscorers = () => {
+  const t = cur(); const rows = [['Player', 'Team', 'Goals', 'Penalties', 'Assists', 'Own goals', 'Yellow', 'Red']];
+  playerStats(t).sort((a, b) => b.goals - a.goals).forEach(p => rows.push([p.player, teamName(t, p.team), p.goals, p.pens, p.assists, p.og, p.yc, p.rc]));
+  download(slug(t.name) + '-scorers.csv', rows.map(r => r.map(csvEsc).join(',')).join('\n'), 'text/csv');
+};
+A.print = () => window.print();
+A.clearres = () => ask('Clear every score, scorer and penalty result? Fixtures stay.', () => mutate(t => { t.matches.forEach(clearResult); t.stages.forEach(s => (s.ties || []).forEach(x => x.override = null)); }), null, { label: 'Clear results' });
+A.clearfix = () => ask('Delete all fixtures and results? Teams and format stay.', () => mutate(t => { t.stages.forEach(s => resetStage(t, s)); t.matches = []; }), null, { label: 'Delete fixtures' });
+
+/* ---------------- MODALS ---------------- */
+const EV_TYPES = [['goal', '⚽ Goal'], ['pen', '⚽ Penalty goal'], ['og', '⚽ Own goal'], ['yc', '🟨 Yellow card'], ['y2', '🟥 Second yellow'], ['rc', '🟥 Red card']];
+function modalHtml() {
+  const m = S.modal; const t = cur(); const wrap = (title, body, foot, cls = '') => `<div class="ov" id="ov-main"><div class="modal ${cls}"><div class="mh"><h3>${title}</h3><button class="btn sm ghost" data-act="closemodal">✕</button></div><div class="mb2">${body}</div><div class="mf">${foot}</div></div></div>`;
+  const cancel = '<button class="btn" data-act="closemodal">Cancel</button>';
+  switch (m.kind) {
+    case 'new': return wizardHtml();
+    case 'preset': return `<div class="ov" id="ov-main"><div class="modal lg"><div class="mh"><h3>Replace format with a preset</h3><button class="btn sm ghost" data-act="closemodal">✕</button></div><div class="mb2">${[...new Set(PRESETS.map(p => p.cat))].map(c => `<div class="cat">${esc(c)}</div><div class="presets">${PRESETS.filter(p => p.cat === c).map(p => `<div class="pcard" data-act="presetpick" data-id="${p.id}"><span class="ic">${p.icon}</span><b>${esc(p.name)}</b><small>${esc(p.desc)}</small></div>`).join('')}</div>`).join('')}</div></div></div>`;
+    case 'mm': return mmHtml(t);
+    case 'bulk': return wrap('Bulk add teams', `<p class="muted small">One team per line. Optionally add a short code and colour: <kbd>Name, ABC, #ff8800</kbd></p><textarea data-chg="mtxt" data-k="text" rows="12" placeholder="Arsenal, ARS&#10;Chelsea, CHE&#10;Liverpool">${esc(m.text)}</textarea><label class="row mt" style="gap:6px"><input type="checkbox" data-chg="mtxt" data-k="replace" ${m.replace ? 'checked' : ''}> Replace the current team list</label>`, `${cancel}<button class="btn primary" data-act="bulksave">Add teams</button>`, 'sm');
+    case 'sample': return wrap('Load sample teams', `<div class="fields"><label class="fld"><span>Set</span><select data-chg="mtxt" data-k="key">${Object.entries(SAMPLES).map(([k, v]) => `<option value="${k}" ${m.key === k ? 'selected' : ''}>${esc(v.label)}</option>`).join('')}</select></label><label class="fld"><span>How many</span><input type="number" min="1" max="128" data-chg="mtxt" data-k="count" value="${m.count}"></label></div><label class="row mt" style="gap:6px"><input type="checkbox" data-chg="mtxt" data-k="replace" ${m.replace ? 'checked' : ''}> Replace the current team list</label><div class="hint">If you ask for more than the set contains, placeholder teams fill the rest. Strongest teams come first, so they become the top seeds.</div>`, `${cancel}<button class="btn primary" data-act="samplesave">Load</button>`, 'sm');
+    case 'players': { const tm = teamById(t, m.id); return wrap(esc(tm.name) + ' — squad', `<p class="muted small">One player per line. Names here appear as suggestions when you add scorers. New scorer names you type are added automatically.</p><textarea data-chg="mtxt" data-k="text" rows="14">${esc(m.text)}</textarea>`, `${cancel}<button class="btn primary" data-act="playersave">Save squad</button>`, 'sm'); }
+    case 'adj': { const s = getStage(t, m.sid); const rows = s.entrantIds.map(id => `<div class="row mb"><span style="flex:1">${tmCell(t, id)}</span><input type="number" data-chg="adj" data-id="${id}" value="${m.vals[id] || 0}" style="width:90px"></div>`).join(''); return wrap('Point adjustments — ' + esc(s.name), `<p class="muted small">Positive = bonus, negative = deduction (e.g. -3). Applied on top of match points before ranking.</p>${rows}`, `${cancel}<button class="btn primary" data-act="adjsave">Save</button>`, 'sm'); }
+    case 'groups': { const s = getStage(t, m.sid); const counts = {}; Object.values(m.map).forEach(g => counts[g] = (counts[g] || 0) + 1);
+      return wrap('Edit groups — ' + esc(s.name), `<p class="muted small">Move teams between groups. Fixtures for the whole stage are rebuilt when you save.</p><div class="grid g3">${s.groups.map(g => `<div class="mm-sec"><b>${esc(g.name)}</b> <span class="muted small">(${counts[g.name] || 0})</span>${s.entrantIds.filter(id => m.map[id] === g.name).map(id => `<div class="row mt"><span style="flex:1">${tmCell(t, id)}</span><select data-chg="grpmap" data-id="${id}" style="width:110px">${s.groups.map(x => `<option ${x.name === g.name ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div>`).join('')}</div>`).join('')}</div>`, `${cancel}<button class="btn primary" data-act="grpsave">Save groups</button>`, 'lg'); }
+    case 'pair': { const s = getStage(t, m.sid); const opts = (cur) => `<option value="">— bye —</option>` + s.entrantIds.map(id => `<option value="${id}" ${cur === id ? 'selected' : ''}>${esc(teamName(t, id))}</option>`).join('');
+      const used = m.slots.flat().filter(Boolean); const dups = used.filter((x, i) => used.indexOf(x) !== i);
+      return wrap('First-round pairings — ' + esc(s.name), `<p class="muted small">Pairs next to each other in the list meet in the following round (1 & 2 → one match, 3 & 4 → the next…). ${dups.length ? '<b style="color:var(--danger)">A team appears twice.</b>' : ''}</p>${m.slots.map((p, j) => `<div class="row mb"><span class="muted" style="width:26px">${j + 1}</span><select data-chg="pair" data-j="${j}" data-k="0" style="flex:1">${opts(p[0])}</select><span class="muted">v</span><select data-chg="pair" data-j="${j}" data-k="1" style="flex:1">${opts(p[1])}</select></div>`).join('')}`, `${cancel}<button class="btn primary" data-act="pairsave">Use these pairings</button>`); }
+  }
+  return '';
+}
+
+/* ---- match editor ---- */
+function openMM(ids) {
+  const t = cur(); const idx = IDX(t);
+  const ms = ids.map(id => idx.m.get(id)).filter(Boolean); if (!ms.length) return;
+  const m0 = ms[0]; const s = stageById(t, m0.stageId); const tie = m0.tieId ? s.ties.find(x => x.id === m0.tieId) : null;
+  S.mm = {
+    ids, tieId: tie ? tie.id : null, sid: s.id, override: tie && tie.override ? tie.override : '',
+    items: ms.map(m => ({ id: m.id, hg: m.hg == null ? '' : String(m.hg), ag: m.ag == null ? '' : String(m.ag), aet: !!m.aet, penH: m.pen && m.pen.h != null ? String(m.pen.h) : '', penA: m.pen && m.pen.a != null ? String(m.pen.a) : '', date: m.date || '', time: m.time || '', venue: m.venue || '', notes: m.notes || '', events: (m.events || []).map(e => Object.assign({}, e)) }))
+  };
+  openModal({ kind: 'mm' });
+}
+A.mm = el => openMM(el.dataset.ids.split(','));
+function mmHtml(t) {
+  const idx = IDX(t); const mm = S.mm; const m0 = idx.m.get(mm.items[0].id); const s = stageById(t, m0.stageId);
+  const tie = mm.tieId ? s.ties.find(x => x.id === mm.tieId) : null;
+  const title = tie ? roundLabel(s, tie) + ' — ' + teamName(t, tie.a) + ' v ' + teamName(t, tie.b) : roundTitle(t, s, m0) + (m0.group ? ' · ' + m0.group : '') + ' — ' + s.name;
+  const teamIds = [...new Set(mm.items.flatMap(it => { const m = idx.m.get(it.id); return [m.home, m.away]; }))];
+  let body = `<datalist id="dl-x"></datalist>` + teamIds.map(id => `<datalist id="dl-${id}">${teamById(t, id).players.map(p => `<option value="${esc(p)}">`).join('')}</datalist>`).join('');
+  const ko = s.type === 'knockout'; const level = tie && idx.tieRes.get(tie.id) && idx.tieRes.get(tie.id).state === 'level';
+  mm.items.forEach((it, i) => {
+    const m = idx.m.get(it.id); const last = i === mm.items.length - 1;
+    const needPen = ko && s.penalties && last;
+    const g = (() => { let h = 0, a = 0; it.events.forEach(e => { if (e.type === 'goal' || e.type === 'pen') { if (e.team === m.home) h++; else if (e.team === m.away) a++; } else if (e.type === 'og') { if (e.team === m.home) a++; else if (e.team === m.away) h++; } }); return { h, a }; })();
+    body += `<div class="mm-sec"><div class="row mb"><b>${mm.items.length > 1 ? 'Leg ' + m.leg + ' of ' + mm.items.length : esc(roundTitle(t, s, m))}</b><span class="spacer"></span>
+      <label class="row small" style="gap:4px">Date <input type="date" data-mf="date" data-i="${i}" value="${esc(it.date)}" style="width:150px"></label><label class="row small" style="gap:4px">Time <input type="time" data-mf="time" data-i="${i}" value="${esc(it.time)}" style="width:110px"></label><label class="row small" style="gap:4px">Venue <input type="text" data-mf="venue" data-i="${i}" value="${esc(it.venue)}" style="width:160px"></label></div>
+      <div class="mm-score">${tmCell(t, m.home, '', true)}<input type="number" min="0" data-mf="hg" data-i="${i}" value="${esc(it.hg)}"><span class="muted">–</span><input type="number" min="0" data-mf="ag" data-i="${i}" value="${esc(it.ag)}">${tmCell(t, m.away)}</div>
+      <div class="row" style="justify-content:center">${(!ko || s.extraTime) ? `<label class="row small" style="gap:6px"><input type="checkbox" data-mf="aet" data-i="${i}" ${it.aet ? 'checked' : ''}> After extra time</label>` : ''}
+      ${needPen || (ko && last && (it.penH || it.penA)) || s.drawPens ? `<span class="small muted">Penalties</span><input type="number" min="0" data-mf="penH" data-i="${i}" value="${esc(it.penH)}" style="width:62px;text-align:center"><span>–</span><input type="number" min="0" data-mf="penA" data-i="${i}" value="${esc(it.penA)}" style="width:62px;text-align:center">` : ''}
+      <button class="btn sm" data-act="mmgoals" data-i="${i}" title="Use the goals listed below as the score">Score from goals (${g.h}–${g.a})</button><button class="btn sm danger" data-act="mmclear" data-i="${i}">Clear result</button></div>
+      <div class="mt"><div class="muted small bold mb">Goals & cards</div>${it.events.map((e, j) => `<div class="evrow"><select data-ev="type" data-i="${i}" data-j="${j}">${EV_TYPES.map(([v, l]) => `<option value="${v}" ${e.type === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        <select data-ev="team" data-i="${i}" data-j="${j}"><option value="${m.home}" ${e.team === m.home ? 'selected' : ''}>${esc(teamName(t, m.home))}</option><option value="${m.away}" ${e.team === m.away ? 'selected' : ''}>${esc(teamName(t, m.away))}</option></select>
+        <input type="text" data-ev="player" data-i="${i}" data-j="${j}" list="dl-${e.team}" placeholder="${e.type === 'og' ? 'Player (own goal)' : 'Player'}" value="${esc(e.player || '')}">
+        <input type="text" data-ev="assist" data-i="${i}" data-j="${j}" list="dl-${e.team}" placeholder="Assist" value="${esc(e.assist || '')}" ${(e.type === 'goal' || e.type === 'pen') ? '' : 'disabled'}>
+        <input type="number" min="0" max="150" data-ev="minute" data-i="${i}" data-j="${j}" placeholder="Min" value="${e.minute == null || e.minute === '' ? '' : esc(e.minute)}"><button class="btn sm icon danger" data-act="evdel" data-i="${i}" data-j="${j}">✕</button></div>`).join('')}
+        <div class="row"><button class="btn sm" data-act="evadd" data-i="${i}" data-type="goal" data-side="h">＋ ${esc(teamById(t, m.home).short)} goal</button><button class="btn sm" data-act="evadd" data-i="${i}" data-type="goal" data-side="a">＋ ${esc(teamById(t, m.away).short)} goal</button><button class="btn sm" data-act="evadd" data-i="${i}" data-type="yc" data-side="h">＋ Card</button><button class="btn sm" data-act="evadd" data-i="${i}" data-type="og" data-side="h">＋ Own goal</button></div>
+        <div class="hint">For an own goal choose the team of the player who scored it — the goal is credited to the opponent.</div></div></div>`;
+  });
+  if (tie && (!s.penalties || level || mm.override)) body += `<div class="mm-sec"><div class="fields w2"><label class="fld"><span>${s.penalties ? 'If still level: winner decided manually' : 'Winner if level (lots / replay result)'}</span><select data-mf2="override"><option value="">— none —</option><option value="${tie.a}" ${mm.override === tie.a ? 'selected' : ''}>${esc(teamName(t, tie.a))}</option><option value="${tie.b}" ${mm.override === tie.b ? 'selected' : ''}>${esc(teamName(t, tie.b))}</option></select></label></div></div>`;
+  body += `<label class="fld"><span>Notes (first match)</span><input type="text" data-mf="notes" data-i="0" value="${esc(mm.items[0].notes)}" placeholder="Referee, attendance, anything…"></label>`;
+  return `<div class="ov" id="ov-main"><div class="modal"><div class="mh"><h3>${esc(title)}</h3><button class="btn sm ghost" data-act="closemodal">✕</button></div><div class="mb2">${body}</div><div class="mf"><button class="btn" data-act="closemodal">Cancel</button><button class="btn primary" data-act="mmsave">Save</button></div></div></div>`;
+}
+function mmInput(e) {
+  if (!S.mm || !S.modal || S.modal.kind !== 'mm') return;
+  const el = e.target, d = el.dataset; if (!d) return;
+  if (d.mf != null) { S.mm.items[+d.i][d.mf] = el.type === 'checkbox' ? el.checked : el.value; return; }
+  if (d.mf2 != null) { S.mm[d.mf2] = el.value; return; }
+  if (d.ev != null) {
+    const ev = S.mm.items[+d.i].events[+d.j]; ev[d.ev] = el.value;
+    if (d.ev === 'team') { const p = el.closest('.evrow').querySelectorAll('input[type=text]'); p.forEach(x => x.setAttribute('list', 'dl-' + el.value)); }
+    if (d.ev === 'type' && e.type === 'change') renderModal();
+  }
+}
+A.evadd = el => {
+  const t = cur(); const it = S.mm.items[+el.dataset.i]; const m = IDX(t).m.get(it.id);
+  it.events.push({ type: el.dataset.type, team: el.dataset.side === 'a' ? m.away : m.home, player: '', assist: '', minute: '' }); renderModal();
+  setTimeout(() => { const rows = document.querySelectorAll('.evrow'); const r = rows[rows.length - 1]; if (r) { const p = r.querySelector('[data-ev=player]'); if (p) p.focus(); } }, 0);
+};
+A.evdel = el => { S.mm.items[+el.dataset.i].events.splice(+el.dataset.j, 1); renderModal(); };
+A.mmclear = el => { const it = S.mm.items[+el.dataset.i]; Object.assign(it, { hg: '', ag: '', aet: false, penH: '', penA: '', events: [] }); renderModal(); };
+A.mmgoals = el => {
+  const t = cur(); const it = S.mm.items[+el.dataset.i]; const m = IDX(t).m.get(it.id); let h = 0, a = 0;
+  it.events.forEach(e => { if (e.type === 'goal' || e.type === 'pen') { if (e.team === m.home) h++; else a++; } else if (e.type === 'og') { if (e.team === m.home) a++; else h++; } });
+  it.hg = String(h); it.ag = String(a); renderModal();
+};
+A.mmsave = () => {
+  const t = cur(); const idx = IDX(t); const mm = S.mm; const out = []; const tieId = mm.tieId;
+  for (const it of mm.items) {
+    const m = idx.m.get(it.id); const hs = String(it.hg).trim(), as = String(it.ag).trim();
+    if ((hs === '') !== (as === '')) return toast('Enter both scores, or leave both empty.', true);
+    const res = { id: it.id, date: it.date, time: it.time, venue: it.venue.trim(), notes: it.notes, aet: !!it.aet };
+    if (hs === '') { res.hg = null; res.ag = null; res.pen = null; res.aet = false; }
+    else {
+      res.hg = Math.max(0, parseInt(hs) || 0); res.ag = Math.max(0, parseInt(as) || 0);
+      const ph = String(it.penH).trim(), pa = String(it.penA).trim();
+      if ((ph === '') !== (pa === '')) return toast('Enter both penalty scores, or neither.', true);
+      if (ph !== '') {
+        const multiLast = tieId && mm.items.length > 1 && it === mm.items[mm.items.length - 1];
+        if (res.hg !== res.ag && !multiLast) return toast('Penalties only apply when the match score is level.', true);
+        const a = Math.max(0, parseInt(ph) || 0), b = Math.max(0, parseInt(pa) || 0);
+        if (a === b) return toast('A shoot-out cannot end level.', true);
+        res.pen = { h: a, a: b };
+      } else res.pen = null;
+    }
+    res.events = it.events.filter(e => e.team).map(e => ({ type: e.type, team: e.team, player: String(e.player || '').trim(), assist: (e.type === 'goal' || e.type === 'pen') ? String(e.assist || '').trim() : '', minute: e.minute === '' || e.minute == null ? null : Math.max(0, parseInt(e.minute) || 0) }));
+    res.events.sort((x, y) => (x.minute == null ? 999 : x.minute) - (y.minute == null ? 999 : y.minute));
+    out.push(res);
+  }
+  const ov = mm.override;
+  A.closemodal();
+  mutate(t => {
+    out.forEach(r => {
+      const m = t.matches.find(x => x.id === r.id);
+      Object.assign(m, { hg: r.hg, ag: r.ag, pen: r.pen, aet: r.aet, date: r.date, time: r.time, venue: r.venue, notes: r.notes, events: r.events });
+      r.events.forEach(e => { const tm = t.teams.find(x => x.id === e.team); if (!tm) return;[e.player, e.assist].forEach(nm => { if (nm && !tm.players.some(p => p.toLowerCase() === nm.toLowerCase())) tm.players.push(nm); }); });
+    });
+    if (tieId) { const s = t.stages.find(x => x.ties.some(y => y.id === tieId)); const tie = s.ties.find(x => x.id === tieId); tie.override = ov || null; }
+  });
+  const t2 = cur(); if (tieId) { const r = IDX(t2).tieRes.get(tieId); if (r && r.state === 'level') toast('Still level on aggregate — enter penalties or pick a winner.', true); }
+  const sc = out.find(r => r.events.length && r.hg != null); if (sc) { const g = eventGoals(Object.assign({}, IDX(t2).m.get(sc.id))); const m = IDX(t2).m.get(sc.id); if (g.h !== m.hg || g.a !== m.ag) toast('Saved — note the listed goals (' + g.h + '–' + g.a + ') don’t match the score (' + m.hg + '–' + m.ag + ').'); }
+};
+
+/* boot */
+load();
+$('file').addEventListener('change', ev => { const f = ev.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => importData(String(r.result)); r.readAsText(f); ev.target.value = ''; });
+render();
+
+</script>
+</body>
+</html>
